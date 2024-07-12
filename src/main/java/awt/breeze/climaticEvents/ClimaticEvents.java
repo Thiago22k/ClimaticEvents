@@ -2,20 +2,39 @@ package awt.breeze.climaticEvents;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
 
 public class ClimaticEvents extends JavaPlugin {
 
     private SolarFlareEvent solarFlareEvent;
     private long nextEventTime;
     private boolean eventScheduled = false;
+    private FileConfiguration solarFlareConfig;
+    private ProgressBarManager progressBarManager;
+    private FileConfiguration messagesConfig;
+    private int warningTimeSeconds;
+    private int intervalDays; // Variable para almacenar interval_days desde config.yml
+
 
     @Override
     public void onEnable() {
+        // Cargar configuración del archivo config.yml y solar_flare.yml
+        loadConfigurations();
+
+        BossBar eventProgressBar = Bukkit.createBossBar(getMessage("boss_bar_title"), BarColor.YELLOW, BarStyle.SOLID);
+        progressBarManager = new ProgressBarManager(this, eventProgressBar);
+
         // Configurar eventos y tareas programadas
         scheduleSolarFlareEvent();
         startTimerTask();
@@ -27,10 +46,85 @@ public class ClimaticEvents extends JavaPlugin {
         cancelSolarFlareEvent();
     }
 
+    // Método para cargar el archivo de configuración config.yml y solar_flare.yml
+    private void loadConfigurations() {
+        try {
+            // Cargar config.yml
+            File configFile = new File(getDataFolder(), "config.yml");
+            if (!configFile.exists()) {
+                configFile.getParentFile().mkdirs();
+                saveResource("config.yml", false);
+            }
+            FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+            intervalDays = config.getInt("interval_days", 7); // Cargar interval_days desde config.yml
+
+
+            // Guardar los archivos de idioma si no existen
+            saveResourceIfNotExists("languages/messages_en.yml");
+            saveResourceIfNotExists("languages/messages_es.yml");
+
+            // Leer el valor del idioma desde config.yml
+            String language = config.getString("language", "en"); // Predeterminado a "en" si no se especifica
+
+            // Cargar el archivo de mensajes basado en el idioma
+            File languageFile = new File(getDataFolder(), "languages/messages_" + language + ".yml");
+            if (!languageFile.exists()) {
+                getLogger().severe("Language file not found: " + languageFile.getPath());
+                return;
+            }
+
+            messagesConfig = YamlConfiguration.loadConfiguration(languageFile);
+
+            updateProgressBarTitle();
+
+            // Cargar solar_flare.yml
+            File solarFlareFile = new File(getDataFolder(), "solar_flare.yml");
+            if (!solarFlareFile.exists()) {
+                solarFlareFile.getParentFile().mkdirs();
+                saveResource("solar_flare.yml", false);
+            }
+            solarFlareConfig = YamlConfiguration.loadConfiguration(solarFlareFile);
+            warningTimeSeconds = solarFlareConfig.getInt("solar_flare.warning_time_seconds", 10);
+
+            Bukkit.getConsoleSender().sendMessage(getMessage("config_reloaded"));
+        } catch (Exception e) {
+            getLogger().severe("Error loading configurations: " + e.getMessage());
+            e.fillInStackTrace();
+        }
+    }
+
+    public FileConfiguration getMessagesConfig() {
+        return messagesConfig;
+    }
+
+    private void saveResourceIfNotExists(String resourcePath) {
+        File file = new File(getDataFolder(), resourcePath);
+        if (!file.exists()) {
+            saveResource(resourcePath, false);
+        }
+    }
+
+    public String getMessage(String key) {
+        String message = messagesConfig.getString(key);
+        if (message == null) {
+            getLogger().warning("Missing message for key: " + key);
+            return ChatColor.RED + "Missing message for key: " + key;
+        }
+        return ChatColor.translateAlternateColorCodes('&', message);
+    }
+
+    private void updateProgressBarTitle() {
+        if (progressBarManager != null) {
+            String newTitle = getMessage("boss_bar_title");
+            progressBarManager.updateTitle(newTitle);
+        }
+    }
+
     // Método para programar el evento de llamarada solar
     private void scheduleSolarFlareEvent() {
-        // 7 días del juego en milisegundos
-        long period = 1000L * 60 * 60 * 24 * 7;
+        long ticksPerDay = 24000L; // Minecraft tiene 24000 ticks en un día
+        long minecraftDays = intervalDays; // Usar la variable intervalDays
+        long period = ticksPerDay * minecraftDays * 50L; // Convertir ticks a milisegundos del mundo real
         nextEventTime = System.currentTimeMillis() + period;
     }
 
@@ -41,10 +135,16 @@ public class ClimaticEvents extends JavaPlugin {
 
         // Crear una nueva instancia del evento de llamarada solar
         World world = Bukkit.getWorlds().get(0); // Obtener el primer mundo (generalmente overworld)
-        solarFlareEvent = new SolarFlareEvent(this, world);
+        solarFlareEvent = new SolarFlareEvent(this, world, solarFlareConfig);
 
         // Iniciar el evento de llamarada solar
         solarFlareEvent.startEvent();
+
+        // Obtener la duración del evento en milisegundos
+        long eventDurationMillis = solarFlareConfig.getInt("solar_flare.duration_seconds", 60) * 1000L;
+
+        // Iniciar la barra de progreso
+        progressBarManager.startProgressBar(eventDurationMillis);
 
         // Marcar que el evento ha sido programado
         eventScheduled = false;
@@ -52,10 +152,13 @@ public class ClimaticEvents extends JavaPlugin {
 
     // Método para cancelar el evento de llamarada solar
     private void cancelSolarFlareEvent() {
-        if (solarFlareEvent != null && !solarFlareEvent.isCancelled()) {
+        if (solarFlareEvent != null) {
             solarFlareEvent.cancel();
+            solarFlareEvent = null;
         }
-        solarFlareEvent = null;
+        if (progressBarManager != null) {
+            progressBarManager.stopProgressBar();
+        }
     }
 
     // Método para obtener el tiempo restante hasta el próximo evento
@@ -63,16 +166,12 @@ public class ClimaticEvents extends JavaPlugin {
         long currentTime = System.currentTimeMillis();
         long timeRemaining = nextEventTime - currentTime;
 
-        if (timeRemaining <= 0) {
-            return "El evento está por comenzar.";
-        }
+        // Convertir el tiempo restante a días de Minecraft
+        long ticksPerDay = 24000L; // Ticks en un día de Minecraft
+        long ticksRemaining = timeRemaining / 50L; // Convertir milisegundos a ticks de Minecraft
+        long daysRemaining = ticksRemaining / ticksPerDay; // Convertir ticks a días de Minecraft
 
-        long days = timeRemaining / (1000 * 60 * 60 * 24);
-        long hours = (timeRemaining / (1000 * 60 * 60)) % 24;
-        long minutes = (timeRemaining / (1000 * 60)) % 60;
-        long seconds = (timeRemaining / 1000) % 60;
-
-        return String.format("%d días, %d horas, %d minutos, %d segundos", days, hours, minutes, seconds);
+        return String.format("%d", daysRemaining);
     }
 
     // Tarea que se ejecuta cada segundo para verificar si es hora de iniciar el evento
@@ -85,13 +184,14 @@ public class ClimaticEvents extends JavaPlugin {
             if (currentTime >= nextEventTime && !eventScheduled) {
                 // Mostrar mensaje de advertencia solo cuando sea el momento adecuado
                 if (timeOfDay >= 0 && timeOfDay < 12000) { // Amanecer (0 a 11999 ticks)
-                    Bukkit.broadcastMessage("¡Atención! Una llamarada solar está por comenzar en 10 segundos.");
-                    nextEventTime = currentTime + 10000; // Esperar 10 segundos antes de iniciar el evento
-                    Bukkit.getScheduler().runTaskLater(this, this::startSolarFlareEvent, 200L); // Iniciar el evento en 10 segundos (200 ticks)
+                    Bukkit.broadcastMessage(getMessage("event_warning"));
+                    nextEventTime = currentTime + warningTimeSeconds * 1000L; // Esperar warningTimeSeconds antes de iniciar el evento
+                    Bukkit.getScheduler().runTaskLater(this, this::startSolarFlareEvent, 20L * warningTimeSeconds); // Iniciar el evento warningTimeSeconds segundos
                     eventScheduled = true; // Marcar que el evento está programado para evitar reprogramaciones
                 } else {
                     // Esperar hasta el próximo día si es de noche
                     nextEventTime = currentTime + (24000 - timeOfDay) * 50; // Ajustar el tiempo hasta el próximo amanecer
+                    Bukkit.broadcastMessage(getMessage("event_dawn_warning"));
                 }
             } else if (currentTime >= nextEventTime && timeOfDay >= 0 && timeOfDay < 12000) {
                 // Si el evento ya está programado y es el momento adecuado, iniciar el evento
@@ -101,49 +201,69 @@ public class ClimaticEvents extends JavaPlugin {
         }, 0L, 20L); // Verificar cada segundo (20 ticks)
     }
 
-    // Método para calcular el tiempo hasta el próximo evento
     private long calculateNextEventTime(long currentTime) {
-        // 7 días del juego en milisegundos
-        long period = 1000L * 60 * 60 * 24 * 7;
+        // Calcular el periodo en milisegundos usando intervalDays
+        long ticksPerDay = 24000L; // Minecraft tiene 24000 ticks en un día
+        long minecraftDays = intervalDays;
+        long period = ticksPerDay * minecraftDays * 50L;
         return currentTime + period;
     }
 
+    // Método para manejar los comandos del plugin
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (label.equalsIgnoreCase("startSolarFlare")) {
-            // Verificar que el comando sea ejecutado por un jugador
-            if (sender instanceof Player player) {
-                // Verificar si el jugador tiene permisos (opcional)
-                if (player.hasPermission("climaticevents.start")) {
-                    // Ajustar el tiempo restante a 1 minuto antes del evento
-                    nextEventTime = System.currentTimeMillis() + 60000; // 1 minuto en milisegundos
-                    player.sendMessage("El evento de llamarada solar comenzará en 1 minuto.");
-                } else {
-                    player.sendMessage("No tienes permisos para ejecutar este comando.");
-                }
+        if (command.getName().equalsIgnoreCase("startevent")) {
+            if (sender instanceof Player && sender.hasPermission("climaticevents.startevent")) {
+                nextEventTime = System.currentTimeMillis() + 15000;
+                sender.sendMessage(getMessage("event_started"));
             } else {
-                sender.sendMessage("Este comando solo puede ser ejecutado por un jugador.");
+                sender.sendMessage(getMessage("no_permission"));
             }
             return true;
-        } else if (label.equalsIgnoreCase("cancelSolarFlare")) {
-            // Verificar que el comando sea ejecutado por un jugador o la consola
-            if (sender instanceof Player || sender instanceof ConsoleCommandSender) {
-                // Cancelar el evento de llamarada solar
+        }
+
+        if (command.getName().equalsIgnoreCase("cancelevent")) {
+            if (sender instanceof Player && sender.hasPermission("climaticevents.cancelevent")) {
                 cancelSolarFlareEvent();
-                sender.sendMessage("Se ha cancelado el evento de llamarada solar.");
-                eventScheduled = false; // Restablecer el estado de programación del evento
+                sender.sendMessage(getMessage("event_cancelled"));
+            } else {
+                sender.sendMessage(getMessage("no_permission"));
+            }
+            return true;
+        }
+
+        if (command.getName().equalsIgnoreCase("nextevent")) {
+            if (sender instanceof Player && sender.hasPermission("climaticevents.nextevent")) {
+                String timeRemaining = getTimeRemaining();
+                sender.sendMessage(getMessage("time_remaining") + timeRemaining);
                 return true;
             } else {
-                sender.sendMessage("Este comando solo puede ser ejecutado por un jugador o la consola.");
+                sender.sendMessage(getMessage("no_permission"));
             }
-        } else if (label.equalsIgnoreCase("nextSolarFlare")) {
-            if (sender instanceof Player || sender instanceof ConsoleCommandSender) {
-                String timeRemaining = getTimeRemaining();
-                sender.sendMessage("Tiempo restante hasta el próximo evento de llamarada solar: " + timeRemaining);
-                return true;
-            }
+            return true;
         }
+
+        if (command.getName().equalsIgnoreCase("climaticevents")) {
+            if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
+                if (sender.hasPermission("climaticevents.reload")) {
+                    super.reloadConfig();
+                    loadConfigurations();
+                } else {
+                    sender.sendMessage(getMessage("no_permission"));
+                }
+            }
+            if (args.length > 0 && args[0].equalsIgnoreCase("resetdays")) {
+                if (sender.hasPermission("climaticevents.resetdays")) {
+                    long currentTime = System.currentTimeMillis();
+                    nextEventTime = calculateNextEventTime(currentTime);
+                    sender.sendMessage(getMessage("reset_days"));
+                } else {
+                    sender.sendMessage(getMessage("no_permission"));
+                }
+            }
+            return true;
+        }
+
         return false;
     }
 }
-

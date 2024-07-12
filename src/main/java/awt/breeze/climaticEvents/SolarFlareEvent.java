@@ -1,67 +1,74 @@
 package awt.breeze.climaticEvents;
 
+import java.util.Random;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class SolarFlareEvent extends BukkitRunnable {
-
-    private final JavaPlugin plugin;
+    private final ClimaticEvents plugin;
     private final World world;
     private boolean running;
+    private final Random random = new Random();
 
-    public SolarFlareEvent(JavaPlugin plugin, World world) {
-        this.plugin = plugin;
+    private final int damagePerSecond;
+    private final int durationSeconds;
+    private final int damageIntervalSeconds;
+    private final double igniteProbability;
+    private final String title;
+    private final String subtitle;
+
+    public SolarFlareEvent(JavaPlugin plugin, World world, FileConfiguration solarFlareConfig) {
+        this.plugin = (ClimaticEvents)plugin;
         this.world = world;
         this.running = false;
+
+        this.damagePerSecond = solarFlareConfig.getInt("solar_flare.damage_per_second", 1);
+        this.durationSeconds = solarFlareConfig.getInt("solar_flare.duration_seconds", 60);
+        this.damageIntervalSeconds = solarFlareConfig.getInt("solar_flare.damage_interval_seconds", 2);
+        this.igniteProbability = solarFlareConfig.getDouble("solar_flare.ignite_probability", 0.1D);
+
+        this.title = ChatColor.translateAlternateColorCodes('&', this.plugin.getMessagesConfig().getString("solar_flare_title", "&cSolar Flare!"));
+        this.subtitle = ChatColor.translateAlternateColorCodes('&', this.plugin.getMessagesConfig().getString("solar_flare_subtitle", "&eSeek shelter from the sun"));
     }
 
-    @Override
     public void run() {
-        // Verificar si el evento está activo y el mundo es el overworld
-        if (running && world.getEnvironment() == World.Environment.NORMAL) {
-            // Obtener todos los jugadores en el mundo actual
-            for (Player player : world.getPlayers()) {
-                // Verificar si el jugador está bajo el sol
+        if (this.running && this.world.getEnvironment() == World.Environment.NORMAL) {
+            for (Player player : this.world.getPlayers()) {
                 if (isPlayerUnderSun(player)) {
-                    // Aplicar daño al jugador
-                    player.damage(1.0);
-                    // Mostrar título en pantalla advirtiendo al jugador
-                    player.sendTitle("¡Llamarada Solar!", "Protégete del sol", 10, 70, 20);
+                    player.damage(this.damagePerSecond);
+                    player.sendTitle(this.title, this.subtitle, 10, 70, 20);
+
+                    if (this.random.nextDouble() < this.igniteProbability) {
+                        player.setFireTicks(40);
+                    }
                 }
             }
         } else {
-            // Detener el evento si no está activo o no es el mundo overworld
-            this.cancel();
+            cancel();
         }
     }
 
-    // Método para verificar si el jugador está bajo el sol
     private boolean isPlayerUnderSun(Player player) {
-        // Verificar si es día en el mundo y si el jugador está bajo el sol
-        if (world.getTime() >= 0 && world.getTime() <= 12000) {
-            // En el mundo overworld, el tiempo 0 a 12000 representa el día
-            return player.getLocation().getBlock().getLightFromSky() == 15;
+        if (this.world.getTime() >= 0L && this.world.getTime() <= 12000L) {
+            return (player.getLocation().getBlock().getLightFromSky() == 15);
         }
         return false;
     }
 
-    // Método para iniciar el evento
     public void startEvent() {
-        if (!running) {
-            // Marcar el evento como activo
-            running = true;
-            // Programar la ejecución del evento cada 2 segundos mientras esté activo
-            this.runTaskTimer(plugin, 0L, 40L); // 20 ticks * 2 segundos = 40 ticks
-            // Programar la cancelación del evento después de 1 minuto (60 segundos)
-            plugin.getServer().getScheduler().runTaskLater(plugin, () -> running = false, 1200L); // 20 ticks * 60 segundos = 1200 ticks
+        if (!this.running) {
+            this.running = true;
+            runTaskTimer(this.plugin, 0L, 20L * this.damageIntervalSeconds);
+            this.plugin.getServer().getScheduler().runTaskLater(this.plugin, () -> this.running = false, 20L * this.durationSeconds);
         }
     }
 
-    // Método para cancelar el evento
     public void cancel() {
-        running = false;
+        this.running = false;
         super.cancel();
     }
 }

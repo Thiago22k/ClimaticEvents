@@ -3,20 +3,25 @@ main: awt.breeze.climaticEvents.ClimaticEvents
 version: 1.0
 description: Plugin extreme climatic events
 api-version: 1.17
-depend: [PlaceholderAPI]
+softdepend: [PlaceholderAPI]
 commands:
-  startSolarFlare:
-    description: "Forzar el inicio del evento de llamarada solar."
-    permission: "climaticevents.start"
-  cancelSolarFlare:
-    description: "Cancelar el evento de llamarada solar."
-  nextSolarFlare:
-    description: "Ver el tiempo restante hasta el próximo evento de llamarada solar."
-
-
-
-permissions:
-  climaticevents.start:
-    description: Permite iniciar manualmente el evento de llamarada solar.
-    default: op
-
+  startevent:
+    description: Inicia el evento de llamarada solar.
+    permission: climaticevents.startevent
+  cancelevent:
+    description: Cancela el evento de llamarada solar.
+    permission: climaticevents.cancelevent
+  nextevent:
+    description: Muestra el tiempo restante hasta el próximo evento de llamarada solar.
+    permission: climaticevents.nextevent
+    default: true
+  climaticevents:
+    description: Comandos para el plugin ClimaticEvents.
+    usage: /<command> reload
+    children:
+      reload:
+        description: Recarga la configuración del plugin ClimaticEvents.
+        permission: climaticevents.reload
+      resetdays:
+        description: Reiniciar los días de intervalo.
+        permission: climaticevents.resetdays
