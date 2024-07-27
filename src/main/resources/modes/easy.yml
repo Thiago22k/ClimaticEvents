@@ -1,0 +1,18 @@
+solar_flare:
+  easy:
+    enabled_boss: false
+    damage_per_seconds: 2
+    duration_seconds: 180
+    damage_interval_seconds: 3
+    ignite_probability: 0.2
+    nether_probability_spawn: 0.2
+    boss_spawn_probability: 0.3
+
+acid_rain:
+  easy:
+    enabled_boss: false
+    boss_spawn_probability: 0.3
+    duration_seconds: 180
+    duration_poison_effect: 2
+    damage_per_seconds: 1
+    nether_probability_spawn: 0.2

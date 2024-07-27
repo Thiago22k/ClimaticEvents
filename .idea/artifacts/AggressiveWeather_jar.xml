@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="AggressiveWeather:jar">
-    <output-path>$USER_HOME$/Desktop</output-path>
-    <root id="archive" name="AggressiveWeather.jar">
-      <element id="module-output" name="AggressiveWeather" />
-    </root>
-  </artifact>
-</component>

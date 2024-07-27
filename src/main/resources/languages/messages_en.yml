@@ -1,0 +1,93 @@
+solar_boss_bar_title: "&eSolar Flare Event"
+rain_boss_bar_title: "&bAcid Rain Event"
+event_warning_content: |
+  &eA weather event is about to strike in 10 seconds!
+  
+  &5Some mobs may spawn near players
+  in the nether during the event.
+event_started: "&cA weather event will start soon!"
+event_cancelled: "&aThe event has been cancelled."
+reset_days: "&eThe days interval has been reset"
+no_permission: "&cYou don't have permission to use this command."
+time_remaining: "Days remaining for the next event: "
+config_reloaded: "&2Configuration reloaded successfully!"
+solar_flare_title: "&cSolar Flare!"
+solar_flare_subtitle: "&eProtect yourself from the sun"
+acid_rain_title: "&cAcid Rain!"
+acid_rain_subtitle: "&eProtect yourself from the rain"
+solar_flare_ended_message: "&eThe solar flare has ended."
+acid_rain_ended_message: "&eThe acid rain has ended."
+solar_flare_death_message: "&f%player% was burned to death during a &esolar flare&f!"
+acid_rain_death_message: "&f%player% dissolved in the &9acid rain&f!"
+chest_loot_message: "&fA chest with &5special loot &fhas appeared at coordinates: &e"
+solar_boss_spawned: "The &eSolar Boss &rhas appeared near &e%player%!"
+rain_boss_spawned: "The &9Rain Boss &rhas appeared near &e%player%!"
+blocked_attack: "&cThe Boss has blocked the attack!"
+respawn_on_event: "You have &e10 &rseconds of immunity!"
+no_chests_found: "&cNo chests to remove."
+no_event_running: "&cThere is no event running to cancel"
+already_enabled_message: "&cThe plugin is already enabled!"
+already_disabled_message: "&cThe plugin is already disabled!"
+enabled_message: "&2ClimaticEvents enabled!"
+disabled_message: "&cClimaticEvents disabled!"
+start_event_disabled: |
+  &cYou can't use this command with the plugin disabled.
+  &fUse &e/climaticevents on &fto enable the plugin.
+event_already_running: "&cThere is already an event running."
+specify_difficulty_mode: "Please specify a mode: &eeasy, normal, hard, hardcore."
+invalid_mode_message: "Invalid mode. Use: &eeasy, normal, hard, hardcore."
+mode_changed: "Mode changed to: &e"
+player_only_command: "&cThis command can only be used by players."
+input_title: "&e&lEnter a number:"
+input_subtitle: "Enter the [&edays interval&r]"
+input_valid_number_help: "&7Type a valid number starting from 1 in the chat or type &e'cancel' &7to exit input mode."
+input_invalid_number: "&cPlease enter a valid number starting from 1."
+interval_days_updated: "&fDays interval updated to: &e"
+
+# panel translations
+# Main panel
+panel_exit_name: "&9Exit"
+panel_random_event_name: "&6Random event"
+random_event_lore_left: "&9Left click to start a random event"
+random_event_lore_right: "&9Right click to cancel a running event"
+panel_enable_disable_name: "&6Enable/Disable"
+panel_enable_disable_description: "&9Enable or disable weather events"
+panel_enable_disable_enabled: "&9Current state: &aEnabled"
+panel_enable_disable_disabled: "&9Current state: &cDisabled"
+panel_reload_name: "&6Reload plugin"
+panel_reload_description: "&9Reload the plugin configuration"
+panel_drop_left: "&9Left click to call a chest drop"
+panel_drop_right: "&9Right click to remove all chests"
+panel_solar_flare_name: "&6Solar Flare"
+panel_solar_flare_left: "&9Click left to force the start of the solar flare"
+panel_solar_flare_right: "&9Click right to cancel the solar flare"
+panel_acid_rain_name: "&bAcid Rain"
+panel_acid_rain_left: "&9Click left to force the start of the acid rain"
+panel_acid_rain_right: "&9Click right to cancel the acid rain"
+panel_electric_storm_name: "&5Electric Storm"
+panel_electric_storm_left: "&9Click left to force the start of the electric storm"
+panel_electric_storm_right: "&9Click right to cancel the electric storm"
+panel_interval_days_name: "&6Days interval"
+panel_interval_days_left: "&9Click left to change the days interval"
+panel_interval_days_right: "&9Click right to reset the days interval"
+panel_interval_days_remaining: "&9Days remaining: "
+panel_difficulty_mode_name: "&6Difficulty mode"
+panel_difficulty_mode_description: "&9Change the difficulty mode of weather events"
+panel_difficulty_mode_current: "&9Current mode: &e"
+
+# Mode Selector panel
+panel_mode_selector_name: "&6&lMode Selector"
+panel_easy_mode_name: "&bEasy"
+panel_easy_mode_description: "&9Click to change to easy mode"
+panel_normal_mode_name: "&eNormal"
+panel_normal_mode_description: "&9Click to change to normal mode"
+panel_hard_mode_name: "&cHard"
+panel_hard_mode_description: "&9Click to change to hard mode"
+panel_hardcore_mode_name: "&4Hardcore"
+panel_hardcore_mode_description: "&9Click to change to hardcore mode"
+panel_back_name: "&9Back"
+
+
+
+
+

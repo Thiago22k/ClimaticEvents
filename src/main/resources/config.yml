@@ -1,4 +1,7 @@
 # Configuración general
 language: "es"
-interval_days: 7
+enabled: true
+mode: "easy"
+interval_days: 3
+radius_chest_spawn: 500
 

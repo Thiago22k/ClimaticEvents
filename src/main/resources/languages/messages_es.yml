@@ -1,0 +1,96 @@
+solar_boss_bar_title: "&eEvento Llamarada Solar"
+rain_boss_bar_title: "&bEvento Lluvia ácida"
+event_warning_content: |
+  &e¡Un evento climático está a punto de golpear 
+  en 10 segundos!
+  
+  &5Algunos mobs podrán spawnear cerca de los jugadores
+  que estén en el nether durante el evento.
+event_started: "&c¡Un evento climatico iniciará pronto!"
+event_cancelled: "&aEl evento ha sido cancelado."
+reset_days: "&eEl intervalo de días ha sido restablecido"
+no_permission: "&cNo tienes permisos para usar este comando."
+time_remaining: "Días restantes para el siguiente evento: "
+config_reloaded: "&2¡Configuración recargada correctamente!"
+solar_flare_title: "&c¡Llamarada Solar!"
+solar_flare_subtitle: "&eProtégete del sol"
+acid_rain_title: "&c¡Lluvia ácida!"
+acid_rain_subtitle: "&eProtégete de la lluvia"
+solar_flare_ended_message: "&eLa llamarada solar ha finalizado."
+acid_rain_ended_message: "&eLa lluvia ácida ha finalizado."
+solar_flare_death_message: "&f%player% fue quemado hasta morir durante una &ellamarada solar&f!"
+acid_rain_death_message: "&f%player% se ha disuelto en la &9lluvia ácida&f!"
+chest_loot_message: "&fUn cofre con &5loot especial &fha aparecido en las coordenadas: &e"
+solar_boss_spawned: "¡El &eJefe solar &rha aparecido cerca de &e%player%!"
+rain_boss_spawned: "¡El &9Jefe de la lluvia &rha aparecido cerca de &e%player%!"
+blocked_attack: "&c¡El Boss ha bloqueado el ataque!"
+respawn_on_event: "¡Tienes &e10 &rsegundos de inmunidad!"
+no_chests_found: "&cNo hay cofres para eliminar."
+no_event_running: "&cNo hay un evento en curso para cancelar"
+already_enabled_message: "&c¡El plugin ya se encuentra habilitado!"
+already_disabled_message: "&c¡El plugin ya se encuentra deshabilitado!"
+enabled_message: "&2¡ClimaticEvents habilitado!"
+disabled_message: "&c¡ClimaticEvents deshabilitado!"
+start_event_disabled: |
+  &cNo puedes usar este comando con el plugin desactivado.
+  &fUsa &e/climaticevents on &fpara habilitar el plugin.
+event_already_running: "&cYa hay un evento en curso."
+specify_difficulty_mode: "Por favor, especifica un modo: &eeasy, normal, hard, hardcore."
+invalid_mode_message: "Modo inválido. Usa: &eeasy, normal, hard, hardcore."
+mode_changed: "Modo cambiado a: &e"
+player_only_command: "&cEste comando solo puede ser usado por jugadores."
+input_title: "&e&lIngreso:"
+input_subtitle: "Introduce el [&eintervalo de días&r]"
+input_valid_number_help: "&7Escribe un número válido a partir de 1 en el chat o escribe &e'cancel' &7para salir del modo de entrada."
+input_invalid_number: "&cPor favor, introduce un número válido a partir de 1."
+interval_days_updated: "&fIntervalo de días actualizado a: &e"
+
+# panel translations
+# Main panel
+panel_exit_name: "&9Salir"
+panel_random_event_name: "&6Evento aleatorio"
+panel_random_event_left: "&9Haz click izquierdo para iniciar un evento aleatorio"
+panel_random_event_right: "&9Haz click derecho para cancelar un evento en curso"
+panel_enable_disable_name: "&6Habilitar/Deshabilitar"
+panel_enable_disable_description: "&9Habilita o deshabilita los eventos climáticos"
+panel_enable_disable_enabled: "&9Estado actual: &aHabilitado"
+panel_enable_disable_disabled: "&9Estado actual: &cDeshabilitado"
+panel_reload_name: "&6Recargar plugin"
+panel_reload_description: "&9Recarga la configuración del plugin"
+panel_drop_left: "&9Haz click izquierdo para llamar un drop"
+panel_drop_right: "&9Haz click derecho para eliminar los drops"
+panel_solar_flare_name: "&eLlamarada Solar"
+panel_solar_flare_left: "&9Haz click izquierdo para forzar el inicio de una llamarada solar"
+panel_solar_flare_right: "&9Haz click derecho para cancelar la llamarada solar"
+panel_acid_rain_name: "&bLluvia ácida"
+panel_acid_rain_left: "&9Haz click izquierdo para forzar el inicio de una lluvia ácida"
+panel_acid_rain_right: "&9Haz click derecho para cancelar la lluvia ácida"
+panel_electric_storm_name: "&5Tormenta eléctrica"
+panel_electric_storm_left: "&9Haz click izquierdo para forzar el inicio de una tormenta eléctrica"
+panel_electric_storm_right: "&9Haz click derecho para cancelar la tormenta eléctrica"
+panel_interval_days_name: "&6Intervalo de días"
+panel_interval_days_left: "&9Haz click izquierdo para cambiar el intervalo de días"
+panel_interval_days_right: "&9Haz click derecho para restablecer el intervalo de días"
+panel_interval_days_remaining: "&9Días restantes: "
+panel_difficulty_mode_name: "&6Modo de dificultad"
+panel_difficulty_mode_description: "&9Cambia el modo de dificultad de los eventos climáticos"
+panel_difficulty_mode_current: "&9Modo actual: &e"
+
+# Mode Selector panel
+panel_mode_selector_name: "&6&lSelector de modo"
+panel_easy_mode_name: "&bFácil"
+panel_easy_mode_description: "&9Haz click para cambiar a modo fácil"
+panel_normal_mode_name: "&eNormal"
+panel_normal_mode_description: "&9Haz click para cambiar a modo normal"
+panel_hard_mode_name: "&cDifícil"
+panel_hard_mode_description: "&9Haz click para cambiar a modo difícil"
+panel_hardcore_mode_name: "&4Hardcore"
+panel_hardcore_mode_description: "&9Haz click para cambiar a modo hardcore"
+panel_back_name: "&9Atrás"
+
+
+
+
+
+
+

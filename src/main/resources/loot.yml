@@ -1,0 +1,40 @@
+loot:
+  - material: NETHERITE_BLOCK
+    minAmount: 1
+    maxAmount: 3
+    probability: 0.25
+  - material: DIAMOND_HELMET
+    minAmount: 1
+    maxAmount: 1
+    probability: 0.15
+    customName: "&bCasco de Diamante"
+    lore:
+      - "&7Un casco especial forjado con los"
+      - "&7mejores materiales."
+  - material: IRON_INGOT
+    minAmount: 3
+    maxAmount: 8
+    probability: 0.5
+  - material: DIAMOND_SWORD
+    minAmount: 1
+    maxAmount: 1
+    probability: 0.1
+    customName: "&cEspada Legendaria"
+    lore:
+      - "&6Una espada con un poder antiguo"
+      - "&6y misterioso."
+    enchantments:
+      SHARPNESS: 5
+      UNBREAKING: 3
+  - material: GOLDEN_APPLE
+    minAmount: 1
+    maxAmount: 3
+    probability: 0.3
+  - material: GOLDEN_CARROT
+    minAmount: 12
+    maxAmount: 24
+    probability: 0.6
+  - material: DARK_OAK_LOG
+    minAmount: 16
+    maxAmount: 32
+    probability: 0.9

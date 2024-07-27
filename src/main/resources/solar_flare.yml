@@ -1,6 +1,0 @@
-solar_flare:
-  damage_per_second: 1
-  warning_time_seconds: 10
-  duration_seconds: 180
-  damage_interval_seconds: 2
-  ignite_probability: 0.1

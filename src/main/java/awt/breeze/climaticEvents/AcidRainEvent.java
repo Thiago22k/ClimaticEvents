@@ -1,95 +1,123 @@
 package awt.breeze.climaticEvents;
 
-import java.util.*;
-
 import awt.breeze.climaticEvents.bosses.BossKiller;
-import awt.breeze.climaticEvents.bosses.SolarBossSpawner;
-import org.bukkit.*;
+import awt.breeze.climaticEvents.bosses.RainBossSpawner;
+import  org.bukkit.*;
+import org.bukkit.World;
+import org.bukkit.block.Biome;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class SolarFlareEvent extends BukkitRunnable {
+import java.util.EnumSet;
+import java.util.Objects;
+import java.util.Random;
+import java.util.Set;
+
+public class AcidRainEvent extends BukkitRunnable {
     private final JavaPlugin plugin;
     private final World world;
-    public boolean running;
     private final Random random = new Random();
-    public static final String SOLAR_FLARE_METADATA_KEY = "onSolarFlare";
+    public boolean running;
+    public static final String ACID_RAIN_METADATA_KEY = "onAcidRain";
+    private final Set<Biome> rainBiomes = EnumSet.of(
+            Biome.DESERT,
+            Biome.SAVANNA,
+            Biome.BADLANDS,
+            Biome.SNOWY_TAIGA,
+            Biome.SNOWY_PLAINS,
+            Biome.SAVANNA_PLATEAU,
+            Biome.WINDSWEPT_SAVANNA,
+            Biome.SNOWY_BEACH,
+            Biome.SNOWY_SLOPES,
+            Biome.FROZEN_PEAKS,
+            Biome.FROZEN_OCEAN
+    );
 
-    private final int damagePerSeconds;
     private final int durationSeconds;
-    private final int damageIntervalSeconds;
-    private final double igniteProbability;
+    private final int damagePerSeconds;
+    private final int durationPoisonEffect;
     private final double netherProbabilitySpawn;
     private final double bossSpawnProbability;
     private final boolean bossActive;
     private final String title;
     private final String subtitle;
 
-    public SolarFlareEvent(JavaPlugin plugin, World world, FileConfiguration modesConfig) {
-        this.plugin = plugin;
+
+    public AcidRainEvent(JavaPlugin plugin, World world, FileConfiguration modesConfig) {
         this.world = world;
+        this.plugin = plugin;
         this.running = false;
 
         String difficultMode = plugin.getConfig().getString("mode", "normal");
-        this.damagePerSeconds = modesConfig.getInt("solar_flare." + difficultMode + ".damage_per_seconds", 2);
-        this.durationSeconds = modesConfig.getInt("solar_flare." + difficultMode + ".duration_seconds", 180);
-        this.damageIntervalSeconds = modesConfig.getInt("solar_flare." + difficultMode + ".damage_interval_seconds", 2);
-        this.igniteProbability = modesConfig.getDouble("solar_flare." + difficultMode + ".ignite_probability", 0.1);
-        this.netherProbabilitySpawn = modesConfig.getDouble("solar_flare." + difficultMode + ".nether_probability_spawn", 0.5);
-        this.bossSpawnProbability = modesConfig.getDouble("solar_flare." + difficultMode + ".boss_spawn_probability", 0.5);
-        this.bossActive = modesConfig.getBoolean("solar_flare." + difficultMode + ".enabled_boss", true);
+        this.durationSeconds = modesConfig.getInt("acid_rain." + difficultMode + ".duration_seconds", 180);
+        this.damagePerSeconds = modesConfig.getInt("acid_rain." + difficultMode + ".damage_per_seconds", 1);
+        this.durationPoisonEffect = modesConfig.getInt("acid_rain." + difficultMode + "duration_poison_effect", 3);
+        this.netherProbabilitySpawn = modesConfig.getDouble("acid_rain." + difficultMode + ".nether_probability_spawn", 0.5);
+        this.bossSpawnProbability = modesConfig.getDouble("acid_rain." + difficultMode + ".boss_spawn_probability", 0.5);
+        this.bossActive = modesConfig.getBoolean("acid_rain." + difficultMode + ".enabled_boss", true);
 
-        this.title = ChatColor.translateAlternateColorCodes('&',  ((ClimaticEvents) plugin).getMessagesConfig().getString("solar_flare_title", "&cSolar Flare!"));
-        this.subtitle = ChatColor.translateAlternateColorCodes('&', ((ClimaticEvents) plugin).getMessagesConfig().getString("solar_flare_subtitle", "&eSeek shelter from the sun"));
+        this.title = ChatColor.translateAlternateColorCodes('&',  ((ClimaticEvents) plugin).getMessagesConfig().getString("acid_rain_title", "&cAcid rain!"));
+        this.subtitle = ChatColor.translateAlternateColorCodes('&', ((ClimaticEvents) plugin).getMessagesConfig().getString("acid_rain_subtitle", "&eSeek shelter from the rain"));
+
     }
 
+    @Override
     public void run() {
-        if (this.running && this.world.getEnvironment() == World.Environment.NORMAL) {
-            long timeOfDay = this.world.getTime();
-            if (timeOfDay > 12000L) {
-                // Cancel the event if it's night
-                cancel();
-                ((ClimaticEvents) plugin).solarProgressBarManager.stopProgressBar();
-                return;
+        if (!this.running || !this.world.hasStorm() || this.world.getEnvironment() != World.Environment.NORMAL) {
+            cancel(); // Cancela el evento si no está lloviendo o no está en el Overworld
+            ((ClimaticEvents) plugin).rainProgressBarManager.stopProgressBar();
+            return;
+        }
+
+        for (Player player : this.world.getPlayers()) {
+
+            Biome biome = player.getWorld().getBiome(player.getLocation().getBlockX(), player.getLocation().getBlockZ());
+
+            // Excluir biomas cálidos y nevados
+            // Solo afectar a jugadores en biomas donde llueve
+            if (rainBiomes.contains(biome)) {
+                continue; // Saltar a la siguiente iteración del bucle si el jugador no está en un bioma donde llueve
             }
 
-            for (Player player : this.world.getPlayers()) {
-                if (isPlayerUnderSun(player) && !player.hasMetadata("solarFlareAffected")) {
-                    player.damage(this.damagePerSeconds);
-                    player.sendTitle(this.title, this.subtitle, 10, 70, 20);
-                    player.setMetadata(SOLAR_FLARE_METADATA_KEY, new FixedMetadataValue(plugin, true));
-
-                    if (this.random.nextDouble() < this.igniteProbability) {
-                        player.setFireTicks(40);
-                    }
-                }
+            if (isPlayerExposedToRain(player) && !player.hasMetadata("acidRainAffected")) {
+                player.setMetadata(ACID_RAIN_METADATA_KEY, new FixedMetadataValue(plugin, true));
+                player.damage(damagePerSeconds);
+                player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, (int) (20L * durationPoisonEffect), 1));
+                player.sendTitle(this.title, this.subtitle, 10, 70, 20);
             }
-
-        } else {
-            cancel();
         }
     }
 
-    private boolean isPlayerUnderSun(Player player) {
-        if (this.world.getTime() >= 0L && this.world.getTime() <= 12000L) {
-            return (player.getLocation().getBlock().getLightFromSky() == 15);
-        }
-        return false;
-    }
+    private boolean isPlayerExposedToRain(Player player) {
+        Location location = player.getLocation();
+        int highestBlockYAtPlayer = Objects.requireNonNull(location.getWorld()).getHighestBlockYAt(location);
+        int playerY = location.getBlockY();
 
+        for (int y = playerY + 1; y <= highestBlockYAtPlayer; y++) {
+            Block blockAbove = location.getWorld().getBlockAt(location.getBlockX(), y, location.getBlockZ());
+            if (blockAbove.getType().isSolid()) {
+                return false; // Jugador está bajo un bloque sólido, no está expuesto a la lluvia
+            }
+        }
+
+        // Si no se encontró ningún bloque sólido encima del jugador hasta el límite del cielo
+        return true;
+    }
 
     public void startEvent() {
-        if (!this.running) {
+        if(!this.running) {
             this.running = true;
             ((ClimaticEvents) plugin).chestDropManager.lootChestPlaced = false;
-            runTaskTimer(this.plugin, 0L, 20L * this.damageIntervalSeconds);
+            runTaskTimer(this.plugin, 0L, 20L);
             this.plugin.getServer().getScheduler().runTaskLater(this.plugin, () -> this.running = false, 20L * this.durationSeconds);
 
-            // Iniciar la tarea de generación de mobs en el Nether
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -107,7 +135,6 @@ public class SolarFlareEvent extends BukkitRunnable {
                 }
             }.runTaskTimer(this.plugin, 0, 20 * 15); // Ejecuta cada 15 segundos
 
-            // Programar la generación del cofre después de 5 segundos
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -121,46 +148,41 @@ public class SolarFlareEvent extends BukkitRunnable {
                 @Override
                 public void run() {
                     if (running && bossActive) {
-                        double probability = random.nextDouble();
-                        plugin.getLogger().info("Probabilidad generada: " + probability + ", Boss Spawn Probability: " + bossSpawnProbability);
-                        if (probability <= bossSpawnProbability) {
-                            SolarBossSpawner solarBossSpawner = new SolarBossSpawner(plugin);
-                            solarBossSpawner.spawnBoss();
-                        } else {
-                            Bukkit.broadcastMessage("El boss no pudo llegar");
+                        if (random.nextDouble() <= bossSpawnProbability) {
+                            RainBossSpawner rainBossSpawner = new RainBossSpawner(plugin);
+                            rainBossSpawner.spawnBoss();
                         }
-                    } else {
-                        Bukkit.broadcastMessage("El boss está desactivado!");
                     }
                 }
             }.runTaskLater(this.plugin, 200L);
 
-
         }
         for (Player player : this.world.getPlayers()) {
-            player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0F, 1.0F);
+            player.playSound(player.getLocation(), Sound.BLOCK_END_PORTAL_SPAWN, 1.0F, 1.0F);
         }
     }
 
     public void cancel() {
-        this.running = false;
         ((ClimaticEvents)plugin).eventActive = false;
+        this.running = false;
         super.cancel();
-        ((ClimaticEvents) plugin).clearPlayerMetadata();
+
+        BossKiller bossKiller = new BossKiller(plugin);
+        bossKiller.killRainBoss();
 
         ((ClimaticEvents) plugin).chestDropManager.killChest();
 
-        BossKiller bossKiller = new BossKiller(plugin);
-        bossKiller.killSolarBoss();
+        ((ClimaticEvents) plugin).rainProgressBarManager.stopProgressBar();
 
-        ((ClimaticEvents) plugin).solarProgressBarManager.stopProgressBar();
-        Bukkit.broadcastMessage(((ClimaticEvents) plugin).getMessage("solar_flare_ended_message"));
+        world.setStorm(false);
+        Bukkit.broadcastMessage(((ClimaticEvents) plugin).getMessage("acid_rain_ended_message"));
 
         for (Player player : this.world.getPlayers()) {
             player.playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0F, 1.0F);
-            player.removeMetadata(SOLAR_FLARE_METADATA_KEY, plugin);
+            player.removeMetadata(ACID_RAIN_METADATA_KEY, plugin);
         }
     }
+
     private void spawnMobsNearPlayer(Player player) {
         Location playerLocation = player.getLocation();
         int radius = 5; // Radio alrededor del jugador para generar mobs
@@ -211,10 +233,6 @@ public class SolarFlareEvent extends BukkitRunnable {
         return netherMobs[random.nextInt(netherMobs.length)];
     }
 
-
 }
-
-
-
 
 

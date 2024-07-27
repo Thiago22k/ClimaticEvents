@@ -5,19 +5,10 @@ description: Plugin extreme climatic events
 api-version: 1.17
 softdepend: [PlaceholderAPI]
 commands:
-  startevent:
-    description: Inicia el evento de llamarada solar.
-    permission: climaticevents.startevent
-  cancelevent:
-    description: Cancela el evento de llamarada solar.
-    permission: climaticevents.cancelevent
-  nextevent:
-    description: Muestra el tiempo restante hasta el próximo evento de llamarada solar.
-    permission: climaticevents.nextevent
-    default: true
   climaticevents:
     description: Comandos para el plugin ClimaticEvents.
-    usage: /<command> reload
+    usage: /<command> <subcommand>
+    aliases: [ce]
     children:
       reload:
         description: Recarga la configuración del plugin ClimaticEvents.
@@ -25,3 +16,53 @@ commands:
       resetdays:
         description: Reiniciar los días de intervalo.
         permission: climaticevents.resetdays
+      startevent:
+        description: Inicia un evento aleatorio.
+        permission: climaticevents.startevent
+      forcesolarflare:
+        description: Inicia el evento llamarada solar.
+        permission: climaticevents.startevent
+      forceacidrain:
+        description: Inicia el evento lluvia ácida.
+        permission: climaticevents.startevent
+      cancelevent:
+        description: Cancela el evento en curso.
+        permission: climaticevents.cancelevent
+      nextevent:
+        description: Muestra el tiempo restante hasta el próximo evento.
+        permission: climaticevents.nextevent
+        default: true
+      spawnsolarboss:
+        description: Spawnear al boss solar.
+        permission: climaticevents.spawnboss
+      spawnrainsboss:
+        description: Spawnear al boss de lluvia ácida.
+        permission: climaticevents.spawnboss
+      killsolarboss:
+        description: Matar al boss solar.
+        permission: climaticevents.killboss
+      killrainboss:
+        description: Matar al boss de lluvia ácida.
+        permission: climaticevents.killboss
+      chest:
+        description: Spawn chest drop.
+        permission: climaticevents.chest
+      killchest:
+        description: Remove chest drop.
+        permission: climaticevents.killchest
+      on:
+        description: Enable plugin.
+        permission: climaticevents.toggle
+      off:
+        description: Disable plugin.
+        permission: climaticevents.toggle
+      panel:
+        description: Open manager panel.
+        permission: climaticevents.panel
+      mode:
+        description: change mode.
+        permission: climaticevents.mode
+      newtime:
+        description: change interval day.
+        permission: climaticevents.mode
+
