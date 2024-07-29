@@ -3,16 +3,17 @@ package awt.breeze.climaticEvents;
 import awt.breeze.climaticEvents.bosses.BossDamageListener;
 import awt.breeze.climaticEvents.bosses.BossDeathListener;
 import awt.breeze.climaticEvents.bosses.BossKiller;
+import awt.breeze.climaticEvents.events.AcidRainEvent;
+import awt.breeze.climaticEvents.events.ElectricStormEvent;
+import awt.breeze.climaticEvents.events.SolarFlareEvent;
 import awt.breeze.climaticEvents.listeners.*;
-import awt.breeze.climaticEvents.managers.ChestDropManager;
-import awt.breeze.climaticEvents.managers.PanelManager;
-import awt.breeze.climaticEvents.managers.RainProgressBarManager;
-import awt.breeze.climaticEvents.managers.SolarProgressBarManager;
+import awt.breeze.climaticEvents.managers.*;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -26,20 +27,23 @@ public class ClimaticEvents extends JavaPlugin {
 
     public SolarFlareEvent solarFlareEvent;
     public AcidRainEvent acidRainEvent;
+    public ElectricStormEvent electricStormEvent;
     public FileConfiguration bossConfig;
     public FileConfiguration messagesConfig;
     public FileConfiguration modesConfig;
-    public FileConfiguration lootConfig;
+    public FileConfiguration chestLootConfig;
+    public FileConfiguration customLootConfig;
     public SolarProgressBarManager solarProgressBarManager;
     public RainProgressBarManager rainProgressBarManager;
+    public StormProgressBarManager stormProgressBarManager;
     public ChestDropManager chestDropManager;
     public CommandHandler commandHandler;
+    private PanelManager panelManager;
     public boolean enabled;
     public long nextEventTime;
     public boolean eventActive = false;
     private int intervalDays;
     private final Random random = new Random();
-    private PanelManager panelManager;
     public String prefix;
 
 
@@ -53,12 +57,16 @@ public class ClimaticEvents extends JavaPlugin {
         BossBar solarEventProgressBar = Bukkit.createBossBar(getMessage("solar_boss_bar_title"), BarColor.YELLOW, BarStyle.SEGMENTED_6);
         solarProgressBarManager = new SolarProgressBarManager(this, solarEventProgressBar);
 
+        BossBar stormEventProgressBar = Bukkit.createBossBar(getMessage("storm_boss_bar_title"), BarColor.WHITE, BarStyle.SEGMENTED_6);
+        stormProgressBarManager = new StormProgressBarManager(this, stormEventProgressBar);
+
         panelManager = new PanelManager(this);
 
         this.prefix = ChatColor.translateAlternateColorCodes('&', "&8⌈&l&f\uD83C\uDF29&8⌋&r ");
 
         this.solarFlareEvent = new SolarFlareEvent(this, getServer().getWorld("world"), getConfig());
         this.acidRainEvent = new AcidRainEvent(this, getServer().getWorld("world"), getConfig());
+        this.electricStormEvent = new ElectricStormEvent(this, getServer().getWorld("world"), getConfig());
         this.enabled = getConfig().getBoolean("enabled", true);
 
         this.chestDropManager = new ChestDropManager(this, getServer().getWorld("world"));
@@ -67,13 +75,14 @@ public class ClimaticEvents extends JavaPlugin {
         CommandHandler commandHandler = new CommandHandler(this);
         Objects.requireNonNull(this.getCommand("climaticevents")).setExecutor(commandHandler);
 
-        getServer().getPluginManager().registerEvents(new BossDeathListener(), this);
+        getServer().getPluginManager().registerEvents(new BossDeathListener(this), this);
         getServer().getPluginManager().registerEvents(new BossDamageListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
         getServer().getPluginManager().registerEvents(new ClimaticDeathListener(this), this);
         getServer().getPluginManager().registerEvents(new RespawnListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerPanelListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerChatListener(this), this);
+        getServer().getPluginManager().registerEvents(new MobsDeathListener(this), this);
 
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new ClimaticEventsExpansion(this).register();
@@ -96,9 +105,12 @@ public class ClimaticEvents extends JavaPlugin {
             acidRainEvent.cancel();
             getLogger().info("Active acid rain event cancelled on plugin disable.");
         }
-        BossKiller bossKiller = new BossKiller(this);
-        bossKiller.killSolarBoss();
-        bossKiller.killRainBoss();
+        if (electricStormEvent != null && electricStormEvent.running) {
+            electricStormEvent.cancel();
+            getLogger().info("Active electric storm event cancelled on plugin disable.");
+        }
+        killAllEventEntities();
+        clearPlayerMetadata();
     }
 
     public PanelManager getPanelManager() {
@@ -109,8 +121,16 @@ public class ClimaticEvents extends JavaPlugin {
         return modesConfig;
     }
 
-    public FileConfiguration getLootConfig() {
-        return lootConfig;
+    public FileConfiguration getChestLootConfig() {
+        return chestLootConfig;
+    }
+
+    public FileConfiguration getBossConfig() {
+        return bossConfig;
+    }
+
+    public FileConfiguration getCustomLootConfig() {
+        return customLootConfig;
     }
 
     public void loadConfigurations() {
@@ -155,12 +175,12 @@ public class ClimaticEvents extends JavaPlugin {
 
             updateProgressBarTitle();
 
-            File lootFile = new File(getDataFolder(), "loot.yml");
-            if (!lootFile.exists()) {
-                lootFile.getParentFile().mkdirs();
-                saveResource("loot.yml", false);
+            File chestLootFile = new File(getDataFolder(), "chestloot.yml");
+            if (!chestLootFile.exists()) {
+                chestLootFile.getParentFile().mkdirs();
+                saveResource("chestloot.yml", false);
             }
-            lootConfig = YamlConfiguration.loadConfiguration(lootFile);
+            chestLootConfig = YamlConfiguration.loadConfiguration(chestLootFile);
 
             File bossFile = new File(getDataFolder(), "boss.yml");
             if(!bossFile.exists()){
@@ -169,9 +189,28 @@ public class ClimaticEvents extends JavaPlugin {
             }
             bossConfig = YamlConfiguration.loadConfiguration(bossFile);
 
+            File customLootFile = new File(getDataFolder(), "MobsCustomLoot.yml");
+            if (!customLootFile.exists()) {
+                customLootFile.getParentFile().mkdirs();
+                saveResource("MobsCustomLoot.yml", false);
+            }
+            customLootConfig = YamlConfiguration.loadConfiguration(customLootFile);
+
         } catch (Exception e) {
             getLogger().severe("Error loading configurations: " + e.getMessage());
             e.fillInStackTrace();
+        }
+    }
+
+    public void killAllEventEntities(){
+        World world = Bukkit.getWorlds().get(0);
+        BossKiller bossKiller = new BossKiller(this);
+        bossKiller.killSolarBoss();
+        bossKiller.killRainBoss();
+        for (Entity entity : world.getEntities()) {
+            if (entity.hasMetadata("electricStormMob")) {
+                entity.remove();
+            }
         }
     }
 
@@ -179,8 +218,10 @@ public class ClimaticEvents extends JavaPlugin {
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.removeMetadata("solarFlareAffected", this);
             player.removeMetadata("acidRainAffected", this);
+            player.removeMetadata("electricStormAffected", this);
             player.removeMetadata("onAcidRain", this);
             player.removeMetadata("onSolarFlare", this);
+            player.removeMetadata("onElectricStorm", this);
         }
     }
 
@@ -221,6 +262,11 @@ public class ClimaticEvents extends JavaPlugin {
             String newTitle = getMessage("rain_boss_bar_title");
             rainProgressBarManager.updateTitle(newTitle);
         }
+        if (stormProgressBarManager != null) {
+            String newTitle = getMessage("storm_boss_bar_title");
+            stormProgressBarManager.updateTitle(newTitle);
+        }
+
     }
 
     private void scheduleGeneralEvent() {
@@ -228,6 +274,30 @@ public class ClimaticEvents extends JavaPlugin {
         long minecraftDays = intervalDays;
         long period = ticksPerDay * minecraftDays * 50L;
         nextEventTime = System.currentTimeMillis() + period;
+    }
+
+    public void startElectricStorm() {
+        long currentTime = System.currentTimeMillis();
+        nextEventTime = calculateNextEventTime(currentTime);
+        reloadConfig();
+        this.eventActive = true;
+
+        if (electricStormEvent != null && electricStormEvent.running) {
+            return;
+        }
+
+        World world = Bukkit.getWorlds().get(0);
+        electricStormEvent = new ElectricStormEvent(this, world, modesConfig);
+        world.setThundering(true);
+        world.setThunderDuration(20 * electricStormEvent.durationSeconds);
+        world.setStorm(true);
+
+        electricStormEvent.startEvent();
+
+        String difficultyMode = getConfig().getString("mode", "normal");
+        long eventDurationMillis = getModesConfig().getInt("electric_storm." + difficultyMode + ".duration_seconds", 30) * 1000L;
+
+        stormProgressBarManager.startStormProgressBar(eventDurationMillis);
     }
 
     public void startAcidRain() {
@@ -243,8 +313,8 @@ public class ClimaticEvents extends JavaPlugin {
 
         acidRainEvent.startEvent();
 
-        String difficultMode = getConfig().getString("mode", "normal");
-        long eventDurationMillis = getModesConfig().getInt("acid_rain." + difficultMode + ".duration_seconds", 30) * 1000L;
+        String difficultyMode = getConfig().getString("mode", "normal");
+        long eventDurationMillis = getModesConfig().getInt("acid_rain." + difficultyMode + ".duration_seconds", 30) * 1000L;
 
         rainProgressBarManager.startRainProgressBar(eventDurationMillis);
     }
@@ -263,8 +333,8 @@ public class ClimaticEvents extends JavaPlugin {
 
         solarFlareEvent.startEvent();
 
-        String difficultMode = getConfig().getString("mode", "normal");
-        long eventDurationMillis = getModesConfig().getInt("solar_flare." + difficultMode + ".duration_seconds", 30) * 1000L;
+        String difficultyMode = getConfig().getString("mode", "normal");
+        long eventDurationMillis = getModesConfig().getInt("solar_flare." + difficultyMode + ".duration_seconds", 30) * 1000L;
 
         solarProgressBarManager.startSolarProgressBar(eventDurationMillis);
     }
@@ -287,7 +357,7 @@ public class ClimaticEvents extends JavaPlugin {
             if (currentTime >= nextEventTime && !this.eventActive) {
                 if (enabled) {
                     Bukkit.broadcastMessage(getFormattedMessage("event_warning_content"));
-                    nextEventTime = currentTime + 10 * 1000L; //
+                    nextEventTime = currentTime + 10 * 1000L;
                     Bukkit.getScheduler().runTaskLater(this, this::startRandomEvent, 20L * 10);
                     this.eventActive = true;
                 }
@@ -301,17 +371,17 @@ public class ClimaticEvents extends JavaPlugin {
     }
 
     public void startRandomEvent() {
-        if (random.nextBoolean()) {
-            long currentTime = System.currentTimeMillis();
-            nextEventTime = calculateNextEventTime(currentTime);
-            reloadConfig();
-            startAcidRain();
-        } else {
-            startSolarFlare();
-            long currentTime = System.currentTimeMillis();
-            reloadConfig();
-            nextEventTime = calculateNextEventTime(currentTime);
-        }
+        List<Runnable> events = Arrays.asList(
+                this::startAcidRain,
+                this::startSolarFlare,
+                this::startElectricStorm
+        );
+
+        long currentTime = System.currentTimeMillis();
+        nextEventTime = calculateNextEventTime(currentTime);
+        reloadConfig();
+
+        events.get(random.nextInt(events.size())).run();
     }
 
     public long calculateNextEventTime(long currentTime) {

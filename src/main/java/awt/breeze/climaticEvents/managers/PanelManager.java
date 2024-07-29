@@ -105,6 +105,7 @@ public class PanelManager {
         lore = new ArrayList<>();
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_random_event_left", "&9Click left to start a random event.")));
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_random_event_right", "&9Click right to cancel the current event.")));
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         meta.setLore(lore);
@@ -119,6 +120,7 @@ public class PanelManager {
             lore = new ArrayList<>();
             lore.add(ChatColor.translateAlternateColorCodes('&', " "));
             lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_enable_disable_description", "&9Enable or disable climatic events.")));
+            lore.add(ChatColor.translateAlternateColorCodes('&', " "));
             lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_enable_disable_enabled", "&9Current status: &aEnabled")));
             lore.add(ChatColor.translateAlternateColorCodes('&', " "));
             meta.setLore(lore);
@@ -132,6 +134,7 @@ public class PanelManager {
             lore = new ArrayList<>();
             lore.add(ChatColor.translateAlternateColorCodes('&', " "));
             lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_enable_disable_description", "&9Enable or disable climatic events.")));
+            lore.add(ChatColor.translateAlternateColorCodes('&', " "));
             lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_enable_disable_disabled", "&9Current status: &cDisabled")));
             lore.add(ChatColor.translateAlternateColorCodes('&', " "));
             meta.setLore(lore);
@@ -158,6 +161,7 @@ public class PanelManager {
         lore = new ArrayList<>();
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_drop_left", "&9Click left to add a drop.")));
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_drop_right", "&9Click right to remove a drop.")));
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         meta.setLore(lore);
@@ -171,6 +175,7 @@ public class PanelManager {
         lore = new ArrayList<>();
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_solar_flare_left", "&9Click left to force the start of the solar flare.")));
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_solar_flare_right", "&9Click right to cancel the solar flare.")));
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         meta.setLore(lore);
@@ -184,6 +189,7 @@ public class PanelManager {
         lore = new ArrayList<>();
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_acid_rain_left", "&9Click left to force the start of the acid rain.")));
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_acid_rain_right", "&9Click right to cancel the acid rain.")));
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         meta.setLore(lore);
@@ -197,6 +203,7 @@ public class PanelManager {
         lore = new ArrayList<>();
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_electric_storm_left", "&9Click left to force the start of the electric storm.")));
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_electric_storm_right", "&9Click right to cancel the electric storm.")));
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         meta.setLore(lore);
@@ -213,7 +220,9 @@ public class PanelManager {
         lore = new ArrayList<>();
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_interval_days_left", "&9Click left to change the interval days.")));
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_interval_days_right", "&9Click right to reset the interval days.")));
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_interval_days_remaining", "&9Days remaining: ")) + replacedText);
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         meta.setLore(lore);
@@ -245,6 +254,48 @@ public class PanelManager {
             item.setItemMeta(meta);
             panel.setItem(23, item);
         }
+
+        item = new ItemStack(Material.BLAZE_SPAWN_EGG);
+        meta = item.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName(ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_solar_boss_name", "&6Solar Boss")));
+        lore = new ArrayList<>();
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
+        lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_solar_boss_left", "&9Click left to spawn the solar boss.")));
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
+        lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_solar_boss_right", "&9Click right to despawn the solar boss.")));
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        panel.setItem(29, item);
+
+        item = new ItemStack(Material.ALLAY_SPAWN_EGG);
+        meta = item.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName(ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_rain_boss_name", "&6Rain Boss")));
+        lore = new ArrayList<>();
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
+        lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_rain_boss_left", "&9Click left to spawn the rain boss.")));
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
+        lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_rain_boss_right", "&9Click right to despawn the rain boss.")));
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        panel.setItem(31, item);
+
+        item = new ItemStack(Material.ENDERMAN_SPAWN_EGG);
+        meta = item.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName(ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_storm_boss_name", "&6Storm Boss")));
+        lore = new ArrayList<>();
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
+        lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_storm_boss_left", "&9Click left to spawn the storm boss.")));
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
+        lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_storm_boss_right", "&9Click right to despawn the storm boss.")));
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        panel.setItem(33, item);
 
         player.openInventory(panel);
         players.add(panelPlayer);
@@ -379,6 +430,13 @@ public class PanelManager {
                 player.closeInventory();
                 player.performCommand("climaticevents cancelevent");
             }
+            if (slot == 15 && clickType.isLeftClick()) {
+                player.closeInventory();
+                player.performCommand("climaticevents forceelectricstorm");
+            } else if (slot == 15 && clickType.isRightClick()) {
+                player.closeInventory();
+                player.performCommand("climaticevents cancelevent");
+            }
             if (slot == 23) {
                 openModesPanel(panelPlayer);
             }
@@ -402,6 +460,27 @@ public class PanelManager {
             } else if (slot == 21 && clickType.isRightClick()) {
                 player.closeInventory();
                 player.performCommand("climaticevents resetdays");
+            }
+            if (slot == 29 && clickType.isLeftClick()) {
+                player.closeInventory();
+                player.performCommand("climaticevents spawnsolarboss");
+            } else if (slot == 29 && clickType.isRightClick()) {
+                player.closeInventory();
+                player.performCommand("climaticevents killsolarboss");
+            }
+            if (slot == 31 && clickType.isLeftClick()) {
+                player.closeInventory();
+                player.performCommand("climaticevents spawnrainboss");
+            } else if (slot == 31 && clickType.isRightClick()) {
+                player.closeInventory();
+                player.performCommand("climaticevents killrainboss");
+            }
+            if (slot == 33 && clickType.isLeftClick()) {
+                player.closeInventory();
+                player.performCommand("climaticevents spawnstormboss");
+            } else if (slot == 33 && clickType.isRightClick()) {
+                player.closeInventory();
+                player.performCommand("climaticevents killstormboss");
             }
         }
         if (section.equals(PanelMain.PANEL_MODES)) {

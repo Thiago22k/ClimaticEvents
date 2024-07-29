@@ -39,7 +39,7 @@ public class PlayerChatListener implements Listener {
                 plugin.loadConfigurations();
                 long currentTime = System.currentTimeMillis();
                 plugin.nextEventTime = plugin.calculateNextEventTime(currentTime);
-                player.sendMessage(plugin.prefix + plugin.getMessage("interval_days_updated" + newInterval));
+                player.sendMessage(plugin.prefix + plugin.getMessage("interval_days_updated") + newInterval);
                 player.resetTitle();
                 plugin.getPanelManager().removePlayerAwaitingInput(player);
             } catch (NumberFormatException e) {

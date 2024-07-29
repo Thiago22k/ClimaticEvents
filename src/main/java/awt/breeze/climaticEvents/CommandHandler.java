@@ -3,6 +3,7 @@ package awt.breeze.climaticEvents;
 import awt.breeze.climaticEvents.bosses.BossKiller;
 import awt.breeze.climaticEvents.bosses.RainBossSpawner;
 import awt.breeze.climaticEvents.bosses.SolarBossSpawner;
+import awt.breeze.climaticEvents.bosses.StormBossSpawner;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -23,8 +24,8 @@ public class CommandHandler implements TabExecutor {
     private final String prefix;
 
     private static final List<String> SUBCOMMANDS = Arrays.asList(
-            "reload", "resetdays", "startevent", "cancelevent", "nextevent", "panel", "forcesolarflare", "forceacidrain",
-            "spawnsolarboss", "spawnrainboss", "killsolarboss", "killrainboss", "chest", "killchest", "on", "off", "mode"
+            "reload", "resetdays", "startevent", "cancelevent", "nextevent", "panel", "forcesolarflare", "forceacidrain", "forceelectricstorm",
+            "spawnsolarboss", "spawnstormboss", "spawnrainboss", "killsolarboss", "killrainboss", "killstormboss", "chest", "killchest", "on", "off", "mode"
     );
 
     public CommandHandler(JavaPlugin plugin) {
@@ -62,6 +63,9 @@ public class CommandHandler implements TabExecutor {
                 case "forceacidrain":
                     handleStartRainEvent(sender);
                     break;
+                case "forceelectricstorm":
+                    handleStartStormEvent(sender);
+                    break;
                 case "cancelevent":
                     handleCancelEvent(sender);
                     break;
@@ -74,11 +78,17 @@ public class CommandHandler implements TabExecutor {
                 case "spawnrainboss":
                     handleSpawnRainBoss(sender);
                     break;
+                case "spawnstormboss":
+                    handleSpawnStormBoss(sender);
+                    break;
                 case "killsolarboss":
                     handleKillSolarBoss(sender);
                     break;
                 case "killrainboss":
                     handleKillRainBoss(sender);
+                    break;
+                case "killstormboss":
+                    handleKillStormBoss(sender);
                     break;
                 case "chest":
                     handleChest(sender);
@@ -187,6 +197,37 @@ public class CommandHandler implements TabExecutor {
         }
     }
 
+    public void handleStartStormEvent(CommandSender sender) {
+        if (sender.hasPermission("climaticevents.startevent")) {
+            if(!((ClimaticEvents)plugin).eventActive) {
+                if(((ClimaticEvents)plugin).enabled) {
+                    ((ClimaticEvents) plugin).startElectricStorm();
+                } else {
+                    String message = ((ClimaticEvents) plugin).getMessage("start_event_disabled");
+                    String[] lines = message.split("\n");
+                    for (String line : lines) {
+                        sender.sendMessage(prefix + line);
+                    }
+                }
+            } else if (!((ClimaticEvents)plugin).eventActive) {
+                if(((ClimaticEvents)plugin).enabled) {
+                    ((ClimaticEvents) plugin).startElectricStorm();
+                } else {
+                    String message = ((ClimaticEvents) plugin).getMessage("start_event_disabled");
+                    String[] lines = message.split("\n");
+                    for (String line : lines) {
+                        sender.sendMessage(prefix + line);
+                    }
+                }
+            } else {
+                sender.sendMessage(prefix + ((ClimaticEvents) plugin).getMessage("event_already_running"));
+            }
+
+        } else {
+            sender.sendMessage(prefix + ((ClimaticEvents) plugin).getMessage("no_permission"));
+        }
+    }
+
     public void handleStartRainEvent(CommandSender sender) {
         if (sender.hasPermission("climaticevents.startevent")) {
             if(!((ClimaticEvents)plugin).eventActive) {
@@ -261,6 +302,11 @@ public class CommandHandler implements TabExecutor {
                 ((ClimaticEvents) plugin).acidRainEvent.cancel();
                 eventCancelled = true;
             }
+            if (((ClimaticEvents) plugin).electricStormEvent != null && ((ClimaticEvents) plugin).electricStormEvent.running) {
+                ((ClimaticEvents) plugin).electricStormEvent.cancel();
+                eventCancelled = true;
+            }
+
             sender.sendMessage(prefix + (eventCancelled ? ((ClimaticEvents) plugin).getMessage("event_cancelled") : ((ClimaticEvents) plugin).getMessage("no_event_running")));
         } else {
             sender.sendMessage(prefix + ((ClimaticEvents) plugin).getMessage("no_permission"));
@@ -273,6 +319,15 @@ public class CommandHandler implements TabExecutor {
             sender.sendMessage(((ClimaticEvents) plugin).getMessage("time_remaining") + timeRemaining);
         } else {
             sender.sendMessage(((ClimaticEvents) plugin).getMessage("time_remaining") + ChatColor.translateAlternateColorCodes('&', "&cDisabled"));
+        }
+    }
+
+    private void handleSpawnStormBoss(CommandSender sender) {
+        if (sender.hasPermission("climaticevents.spawnboss")) {
+            StormBossSpawner stormBossSpawner = new StormBossSpawner(plugin);
+            stormBossSpawner.spawnStormBoss();
+        } else {
+            sender.sendMessage(prefix + ((ClimaticEvents) plugin).getMessage("no_permission"));
         }
     }
 
@@ -298,6 +353,15 @@ public class CommandHandler implements TabExecutor {
         if (sender.hasPermission("climaticevents.killboss")) {
             BossKiller bossKiller = new BossKiller(plugin);
             bossKiller.killSolarBoss();
+        } else {
+            sender.sendMessage(prefix + ((ClimaticEvents) plugin).getMessage("no_permission"));
+        }
+    }
+
+    private void handleKillStormBoss(CommandSender sender) {
+        if (sender.hasPermission("climaticevents.killboss")) {
+            BossKiller bossKiller = new BossKiller(plugin);
+            bossKiller.killStormBoss();
         } else {
             sender.sendMessage(prefix + ((ClimaticEvents) plugin).getMessage("no_permission"));
         }

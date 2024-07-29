@@ -5,6 +5,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class ClimaticEventsExpansion extends PlaceholderExpansion {
     private final ClimaticEvents plugin;
 
@@ -49,6 +51,26 @@ public class ClimaticEventsExpansion extends PlaceholderExpansion {
             long daysRemaining = ticksRemaining / ticksPerDay; // Convertir ticks a días de Minecraft
 
             return String.format("%d", daysRemaining);
+        }
+
+        if (params.equalsIgnoreCase("status")) {
+            if(plugin.enabled){
+                return "Enabled";
+            }else {
+                return "Disabled";
+            }
+        }
+
+        if(params.equalsIgnoreCase("current_mode")) {
+            if (Objects.equals(plugin.getConfig().getString("mode"), "easy")) {
+                return "Easy";
+            } else if (Objects.equals(plugin.getConfig().getString("mode"), "normal")) {
+                return "Normal";
+            } else if (Objects.equals(plugin.getConfig().getString("mode"), "hard")) {
+                return "Hard";
+            } else if (Objects.equals(plugin.getConfig().getString("mode"), "hardcore")) {
+                return "Hardcore";
+            }
         }
 
         // Add more placeholders as needed

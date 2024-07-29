@@ -108,7 +108,7 @@ public class RainBossSpawner {
                     double angle = Math.toRadians((360.0 / particles) * i);
                     double x = radius * Math.cos(angle);
                     double z = radius * Math.sin(angle);
-                    Objects.requireNonNull(loc.getWorld()).spawnParticle(Particle.SOUL_FIRE_FLAME, loc.clone().add(x, 1.5, z), 0);
+                    Objects.requireNonNull(loc.getWorld()).spawnParticle(Particle.FALLING_WATER, loc.clone().add(x, 1.5, z), 0);
                 }
             }
         }.runTaskTimer(plugin, 0L, 10L); // Ejecutar cada 10 ticks (0.5 segundos)

@@ -1,7 +1,8 @@
-package awt.breeze.climaticEvents;
+package awt.breeze.climaticEvents.events;
 
 import java.util.*;
 
+import awt.breeze.climaticEvents.ClimaticEvents;
 import awt.breeze.climaticEvents.bosses.BossKiller;
 import awt.breeze.climaticEvents.bosses.SolarBossSpawner;
 import org.bukkit.*;
@@ -39,7 +40,7 @@ public class SolarFlareEvent extends BukkitRunnable {
         this.durationSeconds = modesConfig.getInt("solar_flare." + difficultMode + ".duration_seconds", 180);
         this.damageIntervalSeconds = modesConfig.getInt("solar_flare." + difficultMode + ".damage_interval_seconds", 2);
         this.igniteProbability = modesConfig.getDouble("solar_flare." + difficultMode + ".ignite_probability", 0.1);
-        this.netherProbabilitySpawn = modesConfig.getDouble("solar_flare." + difficultMode + ".nether_probability_spawn", 0.5);
+        this.netherProbabilitySpawn = modesConfig.getDouble("solar_flare." + difficultMode + ".nether_mobs_probability", 0.5);
         this.bossSpawnProbability = modesConfig.getDouble("solar_flare." + difficultMode + ".boss_spawn_probability", 0.5);
         this.bossActive = modesConfig.getBoolean("solar_flare." + difficultMode + ".enabled_boss", true);
 
@@ -51,7 +52,6 @@ public class SolarFlareEvent extends BukkitRunnable {
         if (this.running && this.world.getEnvironment() == World.Environment.NORMAL) {
             long timeOfDay = this.world.getTime();
             if (timeOfDay > 12000L) {
-                // Cancel the event if it's night
                 cancel();
                 ((ClimaticEvents) plugin).solarProgressBarManager.stopProgressBar();
                 return;
@@ -121,16 +121,10 @@ public class SolarFlareEvent extends BukkitRunnable {
                 @Override
                 public void run() {
                     if (running && bossActive) {
-                        double probability = random.nextDouble();
-                        plugin.getLogger().info("Probabilidad generada: " + probability + ", Boss Spawn Probability: " + bossSpawnProbability);
-                        if (probability <= bossSpawnProbability) {
+                        if (random.nextDouble() <= bossSpawnProbability) {
                             SolarBossSpawner solarBossSpawner = new SolarBossSpawner(plugin);
                             solarBossSpawner.spawnBoss();
-                        } else {
-                            Bukkit.broadcastMessage("El boss no pudo llegar");
                         }
-                    } else {
-                        Bukkit.broadcastMessage("El boss está desactivado!");
                     }
                 }
             }.runTaskLater(this.plugin, 200L);

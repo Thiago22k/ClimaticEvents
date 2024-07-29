@@ -1,0 +1,7 @@
+electricStormMobs:
+  - material: IRON_INGOT
+    min_amount: 1
+    max_amount: 5
+  - material: GOLD_BLOCK
+    min_amount: 1
+    max_amount: 2

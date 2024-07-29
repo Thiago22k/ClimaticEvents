@@ -34,7 +34,7 @@ public class ChestDropManager {
         this.random = new Random();
 
         this.radiusChestSpawn = plugin.getConfig().getInt("radius_chest_spawn", 500);
-        this.lootTable = loadLootTable(((ClimaticEvents) plugin).getLootConfig());
+        this.lootTable = loadLootTable(((ClimaticEvents) plugin).getChestLootConfig());
     }
 
     private List<LootItemManager> loadLootTable(FileConfiguration lootConfig) {

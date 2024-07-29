@@ -27,6 +27,9 @@ public class RespawnListener implements Listener {
         if (plugin.acidRainEvent != null && plugin.acidRainEvent.running) {
             event.getEntity().setMetadata("acidRainAffected", new FixedMetadataValue(plugin, true));
         }
+        if (plugin.electricStormEvent != null && plugin.electricStormEvent.running) {
+            event.getEntity().setMetadata("electricStormAffected", new FixedMetadataValue(plugin, true));
+        }
     }
 
     @EventHandler
@@ -54,6 +57,18 @@ public class RespawnListener implements Listener {
                 @Override
                 public  void run() {
                     player.removeMetadata("acidRainAffected", plugin);
+                }
+            }.runTaskLater(plugin, 20L * 10);
+        }
+        if (plugin.electricStormEvent != null && plugin.electricStormEvent.running) {
+            Player player = event.getPlayer();
+            if (player.hasMetadata("electricStormAffected")) {
+                player.sendMessage(plugin.getMessage("respawn_on_event"));
+            }
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    player.removeMetadata("electricStormAffected", plugin);
                 }
             }.runTaskLater(plugin, 20L * 10);
         }

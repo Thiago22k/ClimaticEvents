@@ -60,6 +60,10 @@ public class BossDamageListener implements Listener {
         double specialRAttackProbability = bossConfig.getDouble("acid_rain.boss.special_attack_probability", 0.5);
         double blockedRAttackProbability = bossConfig.getDouble("acid_rain.boss.blocked_attack_probability", 0.2);
         double specialRAttackDamage = bossConfig.getDouble("acid_rain.boss.special_attack_damage", 15.0);
+        double specialEAttackProbability = bossConfig.getDouble("electric_storm.boss.special_attack_probability", 0.5);
+        double blockedEAttackProbability = bossConfig.getDouble("electric_storm.boss.blocked_attack_probability", 0.2);
+        double specialEAttackDamage = bossConfig.getDouble("electric_storm.boss.special_attack_damage", 15.0);
+        double attackDamage = bossConfig.getDouble("electric_storm.boss.attack_damage", 5.0);
         String blockedAttack = ((ClimaticEvents) plugin).getMessage("blocked_attack");
         Entity damager = event.getDamager();
         Entity entity = event.getEntity();
@@ -110,16 +114,34 @@ public class BossDamageListener implements Listener {
                 player.playSound(player.getLocation(), Sound.BLOCK_CONDUIT_ATTACK_TARGET, 10, 10);
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', blockedAttack));
 
-                // Curar al boss aumentando su salud
                 double currentHealth = mob.getHealth();
                 double maxHealth = Objects.requireNonNull(mob.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue();
-                double healAmount = 3.0; // Cantidad de salud que se quiere restaurar
+                double healAmount = 3.0;
                 mob.setHealth(Math.min(currentHealth + healAmount, maxHealth));
             }
         }
         if (entity instanceof Stray && entity.hasMetadata("rainBoss") && damager instanceof Arrow) {
             event.setCancelled(true);
             repelArrow((Arrow) event.getDamager());
+        }
+
+        if (damager instanceof Golem && damager.hasMetadata("stormBoss") && entity instanceof Player) {
+            Player player = (Player) event.getEntity();
+            if(this.random.nextDouble() < specialEAttackProbability){
+                event.setCancelled(true);
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_STRONG, 10, 10);
+                player.setVelocity(new Vector(0, 2,0));
+                player.damage(specialEAttackDamage);
+            }
+                event.setDamage(attackDamage);
+        }
+        if (entity instanceof Golem && entity.hasMetadata("stormBoss") && damager instanceof Player player) {
+            if(this.random.nextDouble() < blockedEAttackProbability){
+                event.setCancelled(true);
+                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 10, 10);
+                disorganizeHotbar(player);
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', blockedAttack));
+            }
         }
     }
 }

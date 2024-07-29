@@ -1,18 +1,48 @@
 solar_flare:
   boss:
-    name: "&cGuardian Solar"
+    name: "&eSolar Guardian"
     health: 300.0
     special_attack_probability: 0.5
     blocked_attack_probability: 0.2
     special_attack_damage: 10.0
+    loot:
+      - material: GOLDEN_APPLE
+        min_amount: 1
+        max_amount: 3
+      - material: DIAMOND_BLOCK
+        min_amount: 1
+        max_amount: 2
 
 acid_rain:
   boss:
-    name: "&9Guardian de la lluvia"
+    name: "&9Rain Guardian"
     health: 150.0
     special_attack_probability: 0.3
     blocked_attack_probability: 0.1
     special_attack_damage: 10.0
+    loot:
+      - material: GOLDEN_APPLE
+        min_amount: 1
+        max_amount: 3
+      - material: DIAMOND_BLOCK
+        min_amount: 1
+        max_amount: 2
+
+electric_storm:
+  boss:
+    name: "&5Storm Guardian"
+    health: 350.0
+    special_attack_probability: 0.4
+    blocked_attack_probability: 0.1
+    special_attack_damage: 10.0
+    attack_damage: 5.0
+    loot:
+      - material: GOLDEN_APPLE
+        min_amount: 1
+        max_amount: 3
+      - material: DIAMOND_BLOCK
+        min_amount: 1
+        max_amount: 2
 
 
 

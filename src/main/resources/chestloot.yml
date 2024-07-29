@@ -7,10 +7,12 @@ loot:
     minAmount: 1
     maxAmount: 1
     probability: 0.15
-    customName: "&bCasco de Diamante"
+    customName: "&bDiamond Helmet"
     lore:
-      - "&7Un casco especial forjado con los"
-      - "&7mejores materiales."
+      - "&7A helmet made of the"
+      - "&7most precious material."
+    enchantments:
+      PROTECTION: 2
   - material: IRON_INGOT
     minAmount: 3
     maxAmount: 8
@@ -19,10 +21,10 @@ loot:
     minAmount: 1
     maxAmount: 1
     probability: 0.1
-    customName: "&cEspada Legendaria"
+    customName: "&6Legendary Sword"
     lore:
-      - "&6Una espada con un poder antiguo"
-      - "&6y misterioso."
+      - "&6A sword of great power"
+      - "&6and sharpness."
     enchantments:
       SHARPNESS: 5
       UNBREAKING: 3

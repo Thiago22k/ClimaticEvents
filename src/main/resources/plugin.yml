@@ -1,6 +1,6 @@
 name: ClimaticEvents
 main: awt.breeze.climaticEvents.ClimaticEvents
-version: 1.0
+version: 1.0.1
 description: Plugin extreme climatic events
 api-version: 1.17
 softdepend: [PlaceholderAPI]
@@ -25,6 +25,9 @@ commands:
       forceacidrain:
         description: Inicia el evento lluvia ácida.
         permission: climaticevents.startevent
+        forceelectricstorm:
+        description: Inicia el evento tormenta eléctrica.
+        permission: climaticevents.startevent
       cancelevent:
         description: Cancela el evento en curso.
         permission: climaticevents.cancelevent
@@ -35,14 +38,20 @@ commands:
       spawnsolarboss:
         description: Spawnear al boss solar.
         permission: climaticevents.spawnboss
-      spawnrainsboss:
+      spawnrainboss:
         description: Spawnear al boss de lluvia ácida.
+        permission: climaticevents.spawnboss
+      spawnstormboss:
+        description: Spawnear al boss de tormenta eléctrica.
         permission: climaticevents.spawnboss
       killsolarboss:
         description: Matar al boss solar.
         permission: climaticevents.killboss
       killrainboss:
         description: Matar al boss de lluvia ácida.
+        permission: climaticevents.killboss
+      killstormboss:
+        description: Matar al boss de tormenta eléctrica.
         permission: climaticevents.killboss
       chest:
         description: Spawn chest drop.

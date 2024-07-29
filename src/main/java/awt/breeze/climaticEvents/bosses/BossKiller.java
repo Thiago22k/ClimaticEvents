@@ -34,5 +34,15 @@ public class BossKiller {
             }
         }
     }
+    public void killStormBoss() {
+        for (Entity entity : Bukkit.getWorlds().stream().flatMap(world -> world.getEntities().stream()).toList()) {
+            List<MetadataValue> metadataValues = entity.getMetadata("stormBoss");
+            for (MetadataValue metadataValue : metadataValues) {
+                if (metadataValue.asBoolean()) {
+                    entity.remove();
+                }
+            }
+        }
+    }
 }
 

@@ -24,6 +24,10 @@ public class PlayerJoinListener implements Listener {
         if(plugin.rainProgressBarManager.isEventRunning()) {
             plugin.rainProgressBarManager.addPlayerToProgressBar(event.getPlayer());
         }
+
+        if(plugin.stormProgressBarManager.isEventRunning()) {
+            plugin.stormProgressBarManager.addPlayerToProgressBar(event.getPlayer());
+        }
     }
 
 }

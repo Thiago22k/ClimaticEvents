@@ -1,8 +1,9 @@
 package awt.breeze.climaticEvents.listeners;
 
-import awt.breeze.climaticEvents.AcidRainEvent;
+import awt.breeze.climaticEvents.events.AcidRainEvent;
 import awt.breeze.climaticEvents.ClimaticEvents;
-import awt.breeze.climaticEvents.SolarFlareEvent;
+import awt.breeze.climaticEvents.events.ElectricStormEvent;
+import awt.breeze.climaticEvents.events.SolarFlareEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,6 +26,8 @@ public class ClimaticDeathListener implements Listener {
                 deathMessage = plugin.getMessage("solar_flare_death_message");
             } else if (player.hasMetadata(AcidRainEvent.ACID_RAIN_METADATA_KEY)) {
                 deathMessage = plugin.getMessage("acid_rain_death_message");
+            } else if (player.hasMetadata(ElectricStormEvent.ELECTRIC_STORM_METADATA_KEY)) {
+                deathMessage = plugin.getMessage("electric_storm_death_message");
             }
 
             if (deathMessage != null) {

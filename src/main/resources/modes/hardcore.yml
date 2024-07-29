@@ -5,7 +5,7 @@ solar_flare:
     duration_seconds: 420
     damage_interval_seconds: 1
     ignite_probability: 0.8
-    nether_probability_spawn: 0.8
+    nether_mobs_probability: 0.8
     boss_spawn_probability: 1.0
 
 acid_rain:
@@ -15,4 +15,16 @@ acid_rain:
     duration_seconds: 420
     duration_poison_effect: 5
     damage_per_seconds: 3
-    nether_probability_spawn: 0.8
+    nether_mobs_probability: 0.8
+
+electric_storm:
+  hardcore:
+    enabled_boss: true
+    duration_seconds: 420
+    damage_per_seconds: 7
+    nether_mobs_probability: 0.8
+    boss_spawn_probability: 1.0
+    strike_lightning_probability: 0.8
+    storm_mobs_probability: 0.8
+    number_of_mobs: 7
+    interval_strike_lightning_seconds: 5

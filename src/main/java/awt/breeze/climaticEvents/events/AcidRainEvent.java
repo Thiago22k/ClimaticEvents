@@ -1,5 +1,6 @@
-package awt.breeze.climaticEvents;
+package awt.breeze.climaticEvents.events;
 
+import awt.breeze.climaticEvents.ClimaticEvents;
 import awt.breeze.climaticEvents.bosses.BossKiller;
 import awt.breeze.climaticEvents.bosses.RainBossSpawner;
 import  org.bukkit.*;
@@ -55,13 +56,13 @@ public class AcidRainEvent extends BukkitRunnable {
         this.plugin = plugin;
         this.running = false;
 
-        String difficultMode = plugin.getConfig().getString("mode", "normal");
-        this.durationSeconds = modesConfig.getInt("acid_rain." + difficultMode + ".duration_seconds", 180);
-        this.damagePerSeconds = modesConfig.getInt("acid_rain." + difficultMode + ".damage_per_seconds", 1);
-        this.durationPoisonEffect = modesConfig.getInt("acid_rain." + difficultMode + "duration_poison_effect", 3);
-        this.netherProbabilitySpawn = modesConfig.getDouble("acid_rain." + difficultMode + ".nether_probability_spawn", 0.5);
-        this.bossSpawnProbability = modesConfig.getDouble("acid_rain." + difficultMode + ".boss_spawn_probability", 0.5);
-        this.bossActive = modesConfig.getBoolean("acid_rain." + difficultMode + ".enabled_boss", true);
+        String difficultyMode = plugin.getConfig().getString("mode", "normal");
+        this.durationSeconds = modesConfig.getInt("acid_rain." + difficultyMode + ".duration_seconds", 180);
+        this.damagePerSeconds = modesConfig.getInt("acid_rain." + difficultyMode + ".damage_per_seconds", 1);
+        this.durationPoisonEffect = modesConfig.getInt("acid_rain." + difficultyMode + "duration_poison_effect", 3);
+        this.netherProbabilitySpawn = modesConfig.getDouble("acid_rain." + difficultyMode + ".nether_mobs_probability", 0.5);
+        this.bossSpawnProbability = modesConfig.getDouble("acid_rain." + difficultyMode + ".boss_spawn_probability", 0.5);
+        this.bossActive = modesConfig.getBoolean("acid_rain." + difficultyMode + ".enabled_boss", true);
 
         this.title = ChatColor.translateAlternateColorCodes('&',  ((ClimaticEvents) plugin).getMessagesConfig().getString("acid_rain_title", "&cAcid rain!"));
         this.subtitle = ChatColor.translateAlternateColorCodes('&', ((ClimaticEvents) plugin).getMessagesConfig().getString("acid_rain_subtitle", "&eSeek shelter from the rain"));
