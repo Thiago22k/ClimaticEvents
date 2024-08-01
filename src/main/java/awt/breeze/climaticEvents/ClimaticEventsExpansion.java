@@ -31,7 +31,7 @@ public class ClimaticEventsExpansion extends PlaceholderExpansion {
 
     @Override
     public boolean persist() {
-        return true; // This is required to ensure that your expansion will be loaded again after a reload/restart.
+        return true;
     }
 
     @Override
@@ -40,15 +40,13 @@ public class ClimaticEventsExpansion extends PlaceholderExpansion {
             return "";
         }
 
-        // Define your custom placeholders here
         if (params.equalsIgnoreCase("next_event")) {
             long currentTime = System.currentTimeMillis();
             long timeRemaining = plugin.nextEventTime - currentTime;
 
-            // Convertir el tiempo restante a días de Minecraft
-            long ticksPerDay = 24000L; // Ticks en un día de Minecraft
-            long ticksRemaining = timeRemaining / 50L; // Convertir milisegundos a ticks de Minecraft
-            long daysRemaining = ticksRemaining / ticksPerDay; // Convertir ticks a días de Minecraft
+            long ticksPerDay = 24000L;
+            long ticksRemaining = timeRemaining / 50L;
+            long daysRemaining = ticksRemaining / ticksPerDay;
 
             return String.format("%d", daysRemaining);
         }
@@ -73,7 +71,6 @@ public class ClimaticEventsExpansion extends PlaceholderExpansion {
             }
         }
 
-        // Add more placeholders as needed
         return null;
     }
 

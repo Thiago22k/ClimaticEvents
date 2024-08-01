@@ -89,7 +89,6 @@ public class SolarFlareEvent extends BukkitRunnable {
             runTaskTimer(this.plugin, 0L, 20L * this.damageIntervalSeconds);
             this.plugin.getServer().getScheduler().runTaskLater(this.plugin, () -> this.running = false, 20L * this.durationSeconds);
 
-            // Iniciar la tarea de generación de mobs en el Nether
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -105,9 +104,8 @@ public class SolarFlareEvent extends BukkitRunnable {
                         }
                     }
                 }
-            }.runTaskTimer(this.plugin, 0, 20 * 15); // Ejecuta cada 15 segundos
+            }.runTaskTimer(this.plugin, 0, 20 * 15);
 
-            // Programar la generación del cofre después de 5 segundos
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -115,7 +113,7 @@ public class SolarFlareEvent extends BukkitRunnable {
                         ((ClimaticEvents) plugin).chestDropManager.placeLootChest();
                     }
                 }
-            }.runTaskLater(this.plugin, 100L); // 100 ticks = 5 segundos
+            }.runTaskLater(this.plugin, 100L);
 
             new BukkitRunnable() {
                 @Override
@@ -157,16 +155,15 @@ public class SolarFlareEvent extends BukkitRunnable {
     }
     private void spawnMobsNearPlayer(Player player) {
         Location playerLocation = player.getLocation();
-        int radius = 5; // Radio alrededor del jugador para generar mobs
+        int radius = 5;
 
-        for (int i = 0; i < 3; i++) { // Generar 3 mobs aleatorios
+        for (int i = 0; i < 3; i++) {
             int x = playerLocation.getBlockX() + random.nextInt(radius * 2) - radius;
             int z = playerLocation.getBlockZ() + random.nextInt(radius * 2) - radius;
             int y = playerLocation.getBlockY();
 
             Location mobLocation = new Location(player.getWorld(), x, y, z);
 
-            // Buscar una ubicación válida en el aire
             mobLocation = findValidLocation(mobLocation);
 
             if (mobLocation != null) {
@@ -180,7 +177,6 @@ public class SolarFlareEvent extends BukkitRunnable {
         World world = location.getWorld();
         if (world == null) return null;
 
-        // Buscar una ubicación en el aire hacia arriba y hacia abajo
         for (int y = location.getBlockY(); y < world.getMaxHeight(); y++) {
             Location checkLocation = new Location(world, location.getX(), y, location.getZ());
             if (checkLocation.getBlock().getType() == Material.AIR) {
@@ -193,7 +189,7 @@ public class SolarFlareEvent extends BukkitRunnable {
                 return checkLocation;
             }
         }
-        return null; // No se encontró una ubicación válida en el aire
+        return null;
     }
 
     private EntityType getRandomNetherMobType() {

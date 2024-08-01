@@ -135,7 +135,6 @@ public class ClimaticEvents extends JavaPlugin {
 
     public void loadConfigurations() {
         try {
-            // Cargar config.yml
             File configFile = new File(getDataFolder(), "config.yml");
             if (!configFile.exists()) {
                 configFile.getParentFile().mkdirs();
@@ -161,10 +160,8 @@ public class ClimaticEvents extends JavaPlugin {
             saveResourceIfNotExists("languages/messages_en.yml");
             saveResourceIfNotExists("languages/messages_es.yml");
 
-            // Leer el valor del idioma desde config.yml
             String language = config.getString("language", "en");
 
-            // Cargar el archivo de mensajes basado en el idioma
             File languageFile = new File(getDataFolder(), "languages/messages_" + language + ".yml");
             if (!languageFile.exists()) {
                 getLogger().severe("Language file not found: " + languageFile.getPath());
@@ -339,6 +336,14 @@ public class ClimaticEvents extends JavaPlugin {
         solarProgressBarManager.startSolarProgressBar(eventDurationMillis);
     }
 
+    public void sendEventNotice() {
+        String timeRemaining = getTimeRemaining();
+        String message = getFormattedMessage("event_notice_message").replace("%time%", timeRemaining);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.sendMessage(message);
+        }
+    }
+
     public String getTimeRemaining() {
         long currentTime = System.currentTimeMillis();
         long timeRemaining = nextEventTime - currentTime;
@@ -347,7 +352,7 @@ public class ClimaticEvents extends JavaPlugin {
         long ticksRemaining = timeRemaining / 50L;
         long daysRemaining = ticksRemaining / ticksPerDay;
 
-        return String.format("§e%d", daysRemaining);
+        return String.format("§e%d§r", daysRemaining);
     }
 
     private void startTimerTask() {
@@ -368,6 +373,7 @@ public class ClimaticEvents extends JavaPlugin {
             }
 
         }, 0L, 20L);
+        Bukkit.getScheduler().runTaskTimer(this, this::sendEventNotice, 0L, 12000L);
     }
 
     public void startRandomEvent() {

@@ -27,7 +27,6 @@ public class ChestDropManager {
     public boolean lootChestPlaced = false;
     private final int radiusChestSpawn;
 
-
     public ChestDropManager(JavaPlugin plugin, World world) {
         this.plugin = plugin;
         this.world = world;
@@ -52,12 +51,10 @@ public class ChestDropManager {
                     if (material != null) {
                         LootItemManager lootItemManager = new LootItemManager(material, minAmount, maxAmount, probability);
 
-                        // Custom name
                         if (lootItemMap.containsKey("customName")) {
                             lootItemManager.setCustomName(ChatColor.translateAlternateColorCodes('&', (String) lootItemMap.get("customName")));
                         }
 
-                        // Lore
                         if (lootItemMap.containsKey("lore")) {
                             List<String> lore = (List<String>) lootItemMap.get("lore");
                             List<String> translatedLore = new ArrayList<>();
@@ -67,7 +64,6 @@ public class ChestDropManager {
                             lootItemManager.setLore(translatedLore);
                         }
 
-                        // Enchantments
                         if (lootItemMap.containsKey("enchantments")) {
                             Map<String, Integer> enchantments = (Map<String, Integer>) lootItemMap.get("enchantments");
                             Map<Enchantment, Integer> translatedEnchantments = new HashMap<>();
@@ -90,6 +86,7 @@ public class ChestDropManager {
     }
 
     public void killChest() {
+
         if (lootChestBlock != null && lootChestBlock.getType() == Material.CHEST) {
             lootChestBlock.setType(Material.AIR);
             lootChestBlock = null;
@@ -103,20 +100,26 @@ public class ChestDropManager {
     }
 
     public void placeLootChest() {
-        if (this.lootChestPlaced) return; // Verificar si ya se ha generado el cofre
-        this.lootChestPlaced = true; // Marcar que se ha generado el cofre
+        if (this.lootChestPlaced) return;
+        this.lootChestPlaced = true;
 
         int x = random.nextInt(this.radiusChestSpawn) - 100;
         int z = random.nextInt(this.radiusChestSpawn) - 100;
         int y = this.world.getHighestBlockYAt(x, z) + 1;
         Location chestLocation = new Location(this.world, x, y, z);
+        Chunk chunk = chestLocation.getChunk();
+
+        boolean wasChunkLoaded = chunk.isLoaded();
+        if (!wasChunkLoaded) {
+            chunk.load();
+        }
+
         Block block = this.world.getBlockAt(chestLocation);
         block.setType(Material.CHEST);
-        lootChestBlock = block; // Guardar el bloque del cofre
+        lootChestBlock = block;
         Chest chest = (Chest) block.getState();
         Inventory inventory = chest.getInventory();
 
-        // Llenar el cofre con loot
         for (LootItemManager lootItemManager : this.lootTable) {
             if (random.nextDouble() <= lootItemManager.getProbability()) {
                 int amount = random.nextInt(lootItemManager.getMaxAmount() - lootItemManager.getMinAmount() + 1) + lootItemManager.getMinAmount();
@@ -135,6 +138,10 @@ public class ChestDropManager {
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.sendMessage(((ClimaticEvents) plugin).getMessage("chest_loot_message") + x + ", " + y + ", " + z);
+        }
+
+        if (!wasChunkLoaded) {
+            chunk.unload();
         }
     }
 
@@ -162,8 +169,4 @@ public class ChestDropManager {
             }
         }.runTaskTimer(plugin, 0, 20);
     }
-
 }
-
-
-

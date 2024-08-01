@@ -1,3 +1,7 @@
+# This file contains the configuration for the easy mode
+# all probabilities are 1.0 = 100%, 0.5 = 50%, 0.2 = 20%, etc.
+
+
 solar_flare:
   easy:
     enabled_boss: false

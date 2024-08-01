@@ -1,7 +1,22 @@
-# Configuración general
+# This file is used to configure the general settings of the plugin.
+# You can use the "/climaticevents panel" command to better configure the plugin in-game.
+
+# The languages available at the moment are: es, en (spanish, english).
+# You can go to the /languages folder to modify the messages for each language as you wish.
 language: "es"
+
+# Enable or disable the plugin.
 enabled: true
-mode: "easy"
-interval_days: 3
+
+# Set the difficulty mode of the events.
+mode: "normal"
+
+# Set the interval of days for the random events.
+# The interval days means the days in Minecraft that the plugin will wait to start a new random event.
+interval_days: 5
+
+# Set the radius of the chest spawn.
+# The radius is the distance in blocks that the chest will spawn from the 0,0 coordinates.
+# we recommend to set a value between 500 and 1000.
 radius_chest_spawn: 500
 

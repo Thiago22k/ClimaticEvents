@@ -1,12 +1,17 @@
 package awt.breeze.climaticEvents.bosses;
 
 import awt.breeze.climaticEvents.ClimaticEvents;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,16 +25,16 @@ import java.util.Random;
 
 public class StormBossSpawner {
     private final JavaPlugin plugin;
-    private final Random random = new Random();
 
     public StormBossSpawner(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
     public void spawnStormBoss() {
-        Player player = getRandomPlayer();
+        Player player = getRandomPlayerInUnprotectedRegion();
+
         if (player == null) {
-            Bukkit.getLogger().info("No players are online to spawn the boss.");
+            Bukkit.getLogger().info("No players available to spawn boss.");
             return;
         }
 
@@ -52,8 +57,8 @@ public class StormBossSpawner {
 
         golem.setMetadata("stormBoss", new FixedMetadataValue(plugin, true));
 
-        golem.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
-        golem.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, Integer.MAX_VALUE, 1));
+        golem.addPotionEffect(new PotionEffect(Objects.requireNonNull(PotionEffectType.getById(1)), Integer.MAX_VALUE, 1));
+        golem.addPotionEffect(new PotionEffect(Objects.requireNonNull(PotionEffectType.getById(5)), Integer.MAX_VALUE, 1));
 
         String bossSpawnedMessage = ((ClimaticEvents) plugin).getMessage("storm_boss_spawned").replace("%player%", player.getName());
         Bukkit.broadcastMessage(bossSpawnedMessage);
@@ -89,11 +94,14 @@ public class StormBossSpawner {
                 Location bossLocation = golem.getLocation();
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     if (player.getWorld().equals(bossLocation.getWorld()) && player.getLocation().distance(bossLocation) <= 10 && player.getLocation().distance(bossLocation) >= 5) {
+                        if (IsInProtectedWGRegion(player)) {
+                            continue;
+                        }
                         strikePlayerWithLightning(player);
                     }
                 }
             }
-        }.runTaskTimer(plugin, 0L, 200L);
+        }.runTaskTimer(plugin, 0L, 100L);
 
         makeGolemHostile(golem);
 
@@ -137,12 +145,40 @@ public class StormBossSpawner {
         player.getWorld().strikeLightning(playerLocation);
     }
 
-    private Player getRandomPlayer() {
+    private Player getRandomPlayerInUnprotectedRegion() {
         List<Player> players = (List<Player>) Bukkit.getOnlinePlayers();
         if (players.isEmpty()) {
             return null;
         }
-        return players.get(random.nextInt(players.size()));
+        Random random = new Random();
+        Player player;
+        int attempts = 0;
+        int maxAttempts = players.size();
+
+        do {
+            player = players.get(random.nextInt(players.size()));
+            attempts++;
+        } while (IsInProtectedWGRegion(player) && attempts < maxAttempts);
+
+        if (IsInProtectedWGRegion(player)) {
+            return null;
+        }
+
+        return player;
+    }
+
+    private boolean IsInProtectedWGRegion(Player player) {
+        try {
+            RegionContainer rc = WorldGuard.getInstance().getPlatform().getRegionContainer();
+            RegionQuery rq = rc.createQuery();
+            ApplicableRegionSet rs = rq.getApplicableRegions(BukkitAdapter.adapt(player.getLocation()));
+
+            if (rs == null || rs.size() == 0) return false;
+
+            return !rs.testState(null, Flags.MOB_DAMAGE);
+        } catch (NoClassDefFoundError e) {
+            return false;
+        }
     }
 
     @EventHandler

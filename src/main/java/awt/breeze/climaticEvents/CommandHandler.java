@@ -138,6 +138,17 @@ public class CommandHandler implements TabExecutor {
 
     }
 
+    private void handleNextEvent(CommandSender sender) {
+        if(sender.hasPermission("climaticevents.nextevent")) {
+            if (((ClimaticEvents)plugin).enabled) {
+                String timeRemaining = ((ClimaticEvents) plugin).getTimeRemaining();
+                sender.sendMessage(((ClimaticEvents) plugin).getMessage("time_remaining") + timeRemaining);
+            } else {
+                sender.sendMessage(((ClimaticEvents) plugin).getMessage("time_remaining") + ChatColor.translateAlternateColorCodes('&', "&cDisabled"));
+            }
+        }
+    }
+
     private void handleNewTime(CommandSender sender) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage(prefix + ((ClimaticEvents) plugin).getMessage("player_only_command"));
@@ -313,15 +324,6 @@ public class CommandHandler implements TabExecutor {
         }
     }
 
-    private void handleNextEvent(CommandSender sender) {
-        if (((ClimaticEvents)plugin).enabled) {
-            String timeRemaining = ((ClimaticEvents) plugin).getTimeRemaining();
-            sender.sendMessage(((ClimaticEvents) plugin).getMessage("time_remaining") + timeRemaining);
-        } else {
-            sender.sendMessage(((ClimaticEvents) plugin).getMessage("time_remaining") + ChatColor.translateAlternateColorCodes('&', "&cDisabled"));
-        }
-    }
-
     private void handleSpawnStormBoss(CommandSender sender) {
         if (sender.hasPermission("climaticevents.spawnboss")) {
             StormBossSpawner stormBossSpawner = new StormBossSpawner(plugin);
@@ -392,6 +394,7 @@ public class CommandHandler implements TabExecutor {
                 sender.sendMessage(prefix + ((ClimaticEvents) plugin).getMessage("no_chests_found"));
             } else {
                 ((ClimaticEvents) plugin).chestDropManager.killChest();
+                sender.sendMessage(prefix + ((ClimaticEvents)plugin).getMessage("chest_removed_message"));
             }
         } else {
             sender.sendMessage(prefix + ((ClimaticEvents) plugin).getMessage("no_permission"));
@@ -475,3 +478,4 @@ public class CommandHandler implements TabExecutor {
         return null;
     }
 }
+

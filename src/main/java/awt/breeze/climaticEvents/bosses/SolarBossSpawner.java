@@ -1,6 +1,12 @@
 package awt.breeze.climaticEvents.bosses;
 
 import awt.breeze.climaticEvents.ClimaticEvents;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -29,10 +35,10 @@ public class SolarBossSpawner {
     }
 
     public void spawnBoss() {
-        Player player = getRandomPlayer();
+        Player player = getRandomPlayerInUnprotectedRegion();
 
         if (player == null) {
-            Bukkit.getLogger().info("No players are online");
+            Bukkit.getLogger().info("No players available to spawn boss.");
             return;
         }
 
@@ -50,8 +56,8 @@ public class SolarBossSpawner {
         Zombie boss = (Zombie) world.spawnEntity(location, EntityType.ZOMBIE);
         boss.setCustomName(ChatColor.translateAlternateColorCodes('&', bossName));
         boss.setCustomNameVisible(true);
+        boss.setBaby(false);
 
-        // Aumentar la salud máxima permitida
         AttributeInstance maxHealth = boss.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         if (maxHealth != null) {
             maxHealth.setBaseValue(bossHealth);
@@ -60,7 +66,6 @@ public class SolarBossSpawner {
 
         boss.setMetadata("solarBoss", new FixedMetadataValue(plugin, true));
 
-        // Configurar el color de la armadura
         ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
         ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE);
         ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS);
@@ -86,7 +91,6 @@ public class SolarBossSpawner {
         bootsMeta.setColor(Color.YELLOW);
         boots.setItemMeta(bootsMeta);
 
-        // Equipar la armadura al Boss
         Objects.requireNonNull(boss.getEquipment()).setHelmet(helmet, true);
         boss.getEquipment().setChestplate(chestplate, true);
         boss.getEquipment().setLeggings(leggings, true);
@@ -110,7 +114,7 @@ public class SolarBossSpawner {
                     Objects.requireNonNull(loc.getWorld()).spawnParticle(Particle.FLAME, loc.clone().add(x, 1.5, z), 0);
                 }
             }
-        }.runTaskTimer(plugin, 0L, 10L); // Ejecutar cada 10 ticks (0.5 segundos)
+        }.runTaskTimer(plugin, 0L, 10L);
 
 
         new BukkitRunnable() {
@@ -123,30 +127,59 @@ public class SolarBossSpawner {
 
                 Location bossLocation = boss.getLocation();
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (player.getWorld().equals(bossLocation.getWorld()) && player.getLocation().distance(bossLocation) <= 5) { // Rango de 5 bloques
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 100, 1)); // Efecto negativo
+                    if (player.getWorld().equals(bossLocation.getWorld()) && player.getLocation().distance(bossLocation) <= 5) {
+                        if (IsInProtectedWGRegion(player)) {
+                            continue;
+                        }
+                        player.addPotionEffect(new PotionEffect(Objects.requireNonNull(PotionEffectType.getById(19)), 100, 1));
                         player.playSound(player.getLocation(), Sound.ITEM_INK_SAC_USE, 10, 10);
                     }
                 }
             }
-        }.runTaskTimer(plugin, 0L, 200L); // Ejecutar cada segundo
+        }.runTaskTimer(plugin, 0L, 200L);
 
-        // Añadir efectos de poción
-        boss.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, Integer.MAX_VALUE, 1));
-        boss.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, Integer.MAX_VALUE, 2));
-        boss.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 1));
+        boss.addPotionEffect(new PotionEffect(Objects.requireNonNull(PotionEffectType.getById(5)), Integer.MAX_VALUE, 1));
+        boss.addPotionEffect(new PotionEffect(Objects.requireNonNull(PotionEffectType.getById(11)), Integer.MAX_VALUE, 2));
+        boss.addPotionEffect(new PotionEffect(Objects.requireNonNull(PotionEffectType.getById(12)), Integer.MAX_VALUE, 1));
 
         String bossSpawnedMessage = ((ClimaticEvents) plugin).getMessage("solar_boss_spawned").replace("%player%", player.getName());
         Bukkit.broadcastMessage(bossSpawnedMessage);
     }
 
-    private Player getRandomPlayer() {
+    private Player getRandomPlayerInUnprotectedRegion() {
         List<Player> players = (List<Player>) Bukkit.getOnlinePlayers();
         if (players.isEmpty()) {
             return null;
         }
         Random random = new Random();
-        return players.get(random.nextInt(players.size()));
+        Player player;
+        int attempts = 0;
+        int maxAttempts = players.size();
+
+        do {
+            player = players.get(random.nextInt(players.size()));
+            attempts++;
+        } while (IsInProtectedWGRegion(player) && attempts < maxAttempts);
+
+        if (IsInProtectedWGRegion(player)) {
+            return null;
+        }
+
+        return player;
+    }
+
+    private boolean IsInProtectedWGRegion(Player player) {
+        try {
+            RegionContainer rc = WorldGuard.getInstance().getPlatform().getRegionContainer();
+            RegionQuery rq = rc.createQuery();
+            ApplicableRegionSet rs = rq.getApplicableRegions(BukkitAdapter.adapt(player.getLocation()));
+
+            if (rs == null || rs.size() == 0) return false;
+
+            return !rs.testState(null, Flags.MOB_DAMAGE);
+        } catch (NoClassDefFoundError e) {
+            return false;
+        }
     }
 }
 

@@ -9,6 +9,7 @@ event_warning_content: |
   que estén en el nether durante el evento.
 event_started: "&c¡Un evento climatico iniciará pronto!"
 event_cancelled: "&aEl evento ha sido cancelado."
+event_notice_message: "Faltan %time% días para el próximo evento climático."
 reset_days: "&eEl intervalo de días ha sido restablecido"
 no_permission: "&cNo tienes permisos para usar este comando."
 time_remaining: "Días restantes para el siguiente evento: "
@@ -26,6 +27,7 @@ solar_flare_death_message: "&f%player% fue quemado hasta morir durante una &ella
 acid_rain_death_message: "&f%player% se ha disuelto en la &9lluvia ácida&f!"
 electric_storm_death_message: "&f%player% ha muerto durante una &5tormenta eléctrica&f!"
 chest_loot_message: "&fUn cofre con &5loot especial &fha aparecido en las coordenadas: &e"
+chest_removed_message: "&eCofres eliminados."
 solar_boss_spawned: "¡El &eJefe solar &rha aparecido cerca de &e%player%!"
 rain_boss_spawned: "¡El &9Jefe de la lluvia &rha aparecido cerca de &e%player%!"
 storm_boss_spawned: "¡El &5Jefe de tormenta &rha aparecido cerca de &e%player%!"

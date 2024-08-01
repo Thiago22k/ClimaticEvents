@@ -1,7 +1,6 @@
 package awt.breeze.climaticEvents.managers;
 
 import awt.breeze.climaticEvents.ClimaticEvents;
-import me.clip.placeholderapi.PlaceholderAPI;
 import awt.breeze.climaticEvents.PanelMain;
 import awt.breeze.climaticEvents.PanelPlayer;
 import org.bukkit.Bukkit;
@@ -67,7 +66,6 @@ public class PanelManager {
         Player player = panelPlayer.getPlayer();
         Inventory panel = Bukkit.createInventory(null, 45, ChatColor.translateAlternateColorCodes('&', "&f&lClimatic&9&lEvents"));
 
-        // Items relleno
         ItemStack item = new ItemStack(Material.WHITE_STAINED_GLASS_PANE);
         ItemMeta meta = item.getItemMeta();
         assert meta != null;
@@ -97,7 +95,6 @@ public class PanelManager {
         item.setItemMeta(meta);
         panel.setItem(44, item);
 
-        // Items eventos
         item = new ItemStack(Material.RECOVERY_COMPASS);
         meta = item.getItemMeta();
         assert meta != null;
@@ -210,8 +207,7 @@ public class PanelManager {
         item.setItemMeta(meta);
         panel.setItem(15, item);
 
-        String loreText = ChatColor.translateAlternateColorCodes('&', "&e%climaticevents_next_event%");
-        String replacedText = PlaceholderAPI.setPlaceholders(player, loreText);
+        String timeRemaining = ((ClimaticEvents) plugin).getTimeRemaining();
 
         item = new ItemStack(Material.CLOCK);
         meta = item.getItemMeta();
@@ -223,7 +219,7 @@ public class PanelManager {
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_interval_days_right", "&9Click right to reset the interval days.")));
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
-        lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_interval_days_remaining", "&9Days remaining: ")) + replacedText);
+        lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_interval_days_remaining", "&9Days remaining: ")) + timeRemaining);
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         meta.setLore(lore);
         item.setItemMeta(meta);
@@ -306,7 +302,6 @@ public class PanelManager {
         Player player = panelPlayer.getPlayer();
         Inventory panel = Bukkit.createInventory(null, 36, ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_mode_selector_name", "&6&lMode selector")));
 
-        // Items relleno
         ItemStack item = new ItemStack(Material.WHITE_STAINED_GLASS_PANE);
         ItemMeta meta = item.getItemMeta();
         assert meta != null;

@@ -27,7 +27,7 @@ public class AcidRainEvent extends BukkitRunnable {
     private final Random random = new Random();
     public boolean running;
     public static final String ACID_RAIN_METADATA_KEY = "onAcidRain";
-    private final Set<Biome> rainBiomes = EnumSet.of(
+    private final Set<Biome> noRainBiomes = EnumSet.of(
             Biome.DESERT,
             Biome.SAVANNA,
             Biome.BADLANDS,
@@ -72,7 +72,7 @@ public class AcidRainEvent extends BukkitRunnable {
     @Override
     public void run() {
         if (!this.running || !this.world.hasStorm() || this.world.getEnvironment() != World.Environment.NORMAL) {
-            cancel(); // Cancela el evento si no está lloviendo o no está en el Overworld
+            cancel();
             ((ClimaticEvents) plugin).rainProgressBarManager.stopProgressBar();
             return;
         }
@@ -81,10 +81,8 @@ public class AcidRainEvent extends BukkitRunnable {
 
             Biome biome = player.getWorld().getBiome(player.getLocation().getBlockX(), player.getLocation().getBlockZ());
 
-            // Excluir biomas cálidos y nevados
-            // Solo afectar a jugadores en biomas donde llueve
-            if (rainBiomes.contains(biome)) {
-                continue; // Saltar a la siguiente iteración del bucle si el jugador no está en un bioma donde llueve
+            if (noRainBiomes.contains(biome)) {
+                continue;
             }
 
             if (isPlayerExposedToRain(player) && !player.hasMetadata("acidRainAffected")) {
@@ -104,11 +102,10 @@ public class AcidRainEvent extends BukkitRunnable {
         for (int y = playerY + 1; y <= highestBlockYAtPlayer; y++) {
             Block blockAbove = location.getWorld().getBlockAt(location.getBlockX(), y, location.getBlockZ());
             if (blockAbove.getType().isSolid()) {
-                return false; // Jugador está bajo un bloque sólido, no está expuesto a la lluvia
+                return false;
             }
         }
 
-        // Si no se encontró ningún bloque sólido encima del jugador hasta el límite del cielo
         return true;
     }
 
@@ -134,7 +131,7 @@ public class AcidRainEvent extends BukkitRunnable {
                         }
                     }
                 }
-            }.runTaskTimer(this.plugin, 0, 20 * 15); // Ejecuta cada 15 segundos
+            }.runTaskTimer(this.plugin, 0, 20 * 15);
 
             new BukkitRunnable() {
                 @Override
@@ -143,7 +140,7 @@ public class AcidRainEvent extends BukkitRunnable {
                         ((ClimaticEvents) plugin).chestDropManager.placeLootChest();
                     }
                 }
-            }.runTaskLater(this.plugin, 100L); // 100 ticks = 5 segundos
+            }.runTaskLater(this.plugin, 100L);
 
             new BukkitRunnable() {
                 @Override
@@ -186,16 +183,15 @@ public class AcidRainEvent extends BukkitRunnable {
 
     private void spawnMobsNearPlayer(Player player) {
         Location playerLocation = player.getLocation();
-        int radius = 5; // Radio alrededor del jugador para generar mobs
+        int radius = 5;
 
-        for (int i = 0; i < 3; i++) { // Generar 3 mobs aleatorios
+        for (int i = 0; i < 3; i++) {
             int x = playerLocation.getBlockX() + random.nextInt(radius * 2) - radius;
             int z = playerLocation.getBlockZ() + random.nextInt(radius * 2) - radius;
             int y = playerLocation.getBlockY();
 
             Location mobLocation = new Location(player.getWorld(), x, y, z);
 
-            // Buscar una ubicación válida en el aire
             mobLocation = findValidLocation(mobLocation);
 
             if (mobLocation != null) {
@@ -209,7 +205,6 @@ public class AcidRainEvent extends BukkitRunnable {
         World world = location.getWorld();
         if (world == null) return null;
 
-        // Buscar una ubicación en el aire hacia arriba y hacia abajo
         for (int y = location.getBlockY(); y < world.getMaxHeight(); y++) {
             Location checkLocation = new Location(world, location.getX(), y, location.getZ());
             if (checkLocation.getBlock().getType() == Material.AIR) {
@@ -222,7 +217,7 @@ public class AcidRainEvent extends BukkitRunnable {
                 return checkLocation;
             }
         }
-        return null; // No se encontró una ubicación válida en el aire
+        return null;
     }
 
     private EntityType getRandomNetherMobType() {

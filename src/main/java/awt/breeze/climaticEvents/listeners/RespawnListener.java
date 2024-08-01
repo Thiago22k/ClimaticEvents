@@ -19,15 +19,11 @@ public class RespawnListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        // Verificar si la llamarada solar está activa
         if (plugin.solarFlareEvent != null && plugin.solarFlareEvent.running) {
-            // Marcar al jugador como afectado por el evento
             event.getEntity().setMetadata("solarFlareAffected", new FixedMetadataValue(plugin, true));
-        }
-        if (plugin.acidRainEvent != null && plugin.acidRainEvent.running) {
+        } else if (plugin.acidRainEvent != null && plugin.acidRainEvent.running) {
             event.getEntity().setMetadata("acidRainAffected", new FixedMetadataValue(plugin, true));
-        }
-        if (plugin.electricStormEvent != null && plugin.electricStormEvent.running) {
+        } else if (plugin.electricStormEvent != null && plugin.electricStormEvent.running) {
             event.getEntity().setMetadata("electricStormAffected", new FixedMetadataValue(plugin, true));
         }
     }
@@ -35,17 +31,15 @@ public class RespawnListener implements Listener {
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         if (plugin.solarFlareEvent != null && plugin.solarFlareEvent.running) {
-            // Verificar si el jugador estaba afectado por el evento
             Player player = event.getPlayer();
             if (player.hasMetadata("solarFlareAffected")) {
                 player.sendMessage(plugin.getMessage("respawn_on_event"));
-                // Esperar 5 segundos y eliminar la metadata
                 new BukkitRunnable() {
                     @Override
                     public void run() {
                         player.removeMetadata("solarFlareAffected", plugin);
                     }
-                }.runTaskLater(plugin, 20L * 10); // Espera 5 segundos
+                }.runTaskLater(plugin, 20L * 10);
             }
         }
         if (plugin.acidRainEvent != null && plugin.acidRainEvent.running) {

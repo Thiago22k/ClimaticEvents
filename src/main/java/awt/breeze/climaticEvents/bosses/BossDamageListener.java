@@ -68,7 +68,6 @@ public class BossDamageListener implements Listener {
         Entity damager = event.getDamager();
         Entity entity = event.getEntity();
 
-        // Verificar que el daño lo haga un Zombie y que tenga la metadata "isBoss"
         if (damager instanceof Zombie && damager.hasMetadata("solarBoss") && entity instanceof Player) {
             Player player = (Player) event.getEntity();
             if(this.random.nextDouble() < specialSAttackProbability){
@@ -77,9 +76,8 @@ public class BossDamageListener implements Listener {
                 player.setVelocity(new Vector(0, 2,0));
                 player.damage(specialSAttackDamage);
             }
-            // Aplicar efectos negativos al jugador
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 100, 1)); // Lentitud por 5 segundos
-            player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100, 1)); // Debilidad por 5 segundos
+            player.addPotionEffect(new PotionEffect(PotionEffectType.getById(2), 100, 1));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.getById(18), 100, 1));
             player.setFireTicks(100);
         }
         if (entity instanceof Zombie && entity.hasMetadata("solarBoss") && damager instanceof Player) {
@@ -87,7 +85,7 @@ public class BossDamageListener implements Listener {
                 event.setCancelled(true);
                 Player player = (Player) event.getDamager();
                 player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 10, 10);
-                player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 100, 150));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.getById(9), 100, 150));
                 player.setFireTicks(60);
                 player.setVelocity(new Vector(0, 1, 0));
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', blockedAttack));
@@ -101,9 +99,8 @@ public class BossDamageListener implements Listener {
                 disorganizeHotbar(player);
                 player.damage(specialRAttackDamage);
             }
-            // Aplicar efectos negativos al jugador
-            player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 100, 128)); // Lentitud por 5 segundos
-            player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100, 128)); // Debilidad por 5 segundos
+            player.addPotionEffect(new PotionEffect(PotionEffectType.getById(17), 100, 128));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.getById(18), 100, 128));
             player.setFireTicks(100);
         }
         if (entity instanceof Stray && entity.hasMetadata("rainBoss") && damager instanceof Player) {

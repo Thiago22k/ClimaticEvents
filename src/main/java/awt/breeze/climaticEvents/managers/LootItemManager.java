@@ -24,9 +24,6 @@ public class LootItemManager {
         this.probability = probability;
     }
 
-    // Getters and setters for customName, lore, and enchantments
-
-
     public int getMinAmount() {
         return minAmount;
     }

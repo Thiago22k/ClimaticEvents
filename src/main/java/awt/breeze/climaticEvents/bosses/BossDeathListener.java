@@ -22,9 +22,16 @@ public class BossDeathListener implements Listener {
 
     private final JavaPlugin plugin;
     private final Random random = new Random();
+    private final int solarBossXp;
+    private final int rainBossXp;
+    private final int stormBossXp;
 
     public BossDeathListener(JavaPlugin plugin) {
         this.plugin = plugin;
+
+        this.solarBossXp = ((ClimaticEvents) plugin).getBossConfig().getInt("solar_flare.boss.xp", 1200);
+        this.rainBossXp = ((ClimaticEvents) plugin).getBossConfig().getInt("acid_rain.boss.xp", 1000);
+        this.stormBossXp = ((ClimaticEvents) plugin).getBossConfig().getInt("electric_storm.boss.xp", 1400);
     }
 
     @EventHandler
@@ -50,13 +57,12 @@ public class BossDeathListener implements Listener {
                         }
                     }
                 }
-                int xpAmount = 1200;
+                int xpAmount = solarBossXp;
                 Location location = entity.getLocation();
                 Objects.requireNonNull(location.getWorld()).spawn(location, ExperienceOrb.class, orb -> orb.setExperience(xpAmount));
             }
         }
         if (entity.getType() == EntityType.STRAY && entity.hasMetadata("rainBoss")) {
-            // Limpiar drops normales
             event.getDrops().clear();
             FileConfiguration bossConfig = ((ClimaticEvents) plugin).getBossConfig();
             List<?> drops = bossConfig.getList("acid_rain.boss.loot");
@@ -74,7 +80,29 @@ public class BossDeathListener implements Listener {
                     }
                 }
             }
-            int xpAmount = 1000;
+            int xpAmount = rainBossXp;
+            Location location = entity.getLocation();
+            Objects.requireNonNull(location.getWorld()).spawn(location, ExperienceOrb.class, orb -> orb.setExperience(xpAmount));
+        }
+        if (entity.getType() == EntityType.IRON_GOLEM && entity.hasMetadata("stormBoss")) {
+            event.getDrops().clear();
+            FileConfiguration bossConfig = ((ClimaticEvents) plugin).getBossConfig();
+            List<?> drops = bossConfig.getList("electric_storm.boss.loot");
+
+            if (drops != null) {
+                for (Object drop : drops) {
+                    if (drop instanceof Map<?, ?> dropMap) {
+                        Material material = Material.getMaterial((String) dropMap.get("material"));
+                        int minAmount = (int) dropMap.get("min_amount");
+                        int maxAmount = (int) dropMap.get("max_amount");
+                        int amount = minAmount + random.nextInt(maxAmount - minAmount + 1);
+                        if (material != null) {
+                            event.getDrops().add(new ItemStack(material, amount));
+                        }
+                    }
+                }
+            }
+            int xpAmount = stormBossXp;
             Location location = entity.getLocation();
             Objects.requireNonNull(location.getWorld()).spawn(location, ExperienceOrb.class, orb -> orb.setExperience(xpAmount));
         }

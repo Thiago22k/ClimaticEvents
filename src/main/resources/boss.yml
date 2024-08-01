@@ -5,6 +5,7 @@ solar_flare:
     special_attack_probability: 0.5
     blocked_attack_probability: 0.2
     special_attack_damage: 10.0
+    xp: 1200
     loot:
       - material: GOLDEN_APPLE
         min_amount: 1
@@ -20,6 +21,7 @@ acid_rain:
     special_attack_probability: 0.3
     blocked_attack_probability: 0.1
     special_attack_damage: 10.0
+    xp: 1000
     loot:
       - material: GOLDEN_APPLE
         min_amount: 1
@@ -36,6 +38,7 @@ electric_storm:
     blocked_attack_probability: 0.1
     special_attack_damage: 10.0
     attack_damage: 5.0
+    xp: 1400
     loot:
       - material: GOLDEN_APPLE
         min_amount: 1

@@ -4,6 +4,12 @@ import awt.breeze.climaticEvents.ClimaticEvents;
 import awt.breeze.climaticEvents.bosses.BossKiller;
 import awt.breeze.climaticEvents.bosses.StormBossSpawner;
 import awt.breeze.climaticEvents.managers.ChestDropManager;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -31,7 +37,7 @@ public class ElectricStormEvent extends BukkitRunnable {
     public boolean running;
     public static final String ELECTRIC_STORM_METADATA_KEY = "onElectricStorm";
     public static final String ELECTRIC_STORM_MOB_METADATA_KEY = "electricStormMob";
-    private final Set<Biome> stormBiomes = EnumSet.of(
+    private final Set<Biome> noRainBiomes = EnumSet.of(
             Biome.DESERT,
             Biome.SAVANNA,
             Biome.BADLANDS,
@@ -93,13 +99,13 @@ public class ElectricStormEvent extends BukkitRunnable {
         for (Player player : this.world.getPlayers()) {
             Biome biome = player.getWorld().getBiome(player.getLocation().getBlockX(), player.getLocation().getBlockZ());
 
-            if (stormBiomes.contains(biome)) {
+            if (noRainBiomes.contains(biome)) {
                 continue;
             }
 
             if (isPlayerExposedToStorm(player) && !player.hasMetadata("electricStormAffected")) {
                 player.setMetadata(ELECTRIC_STORM_METADATA_KEY, new FixedMetadataValue(plugin, true));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 20, 1, false, false));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.getById(2), 20, 1, false, false));
                 player.damage(damagePerSeconds);
                 player.sendTitle(this.title, this.subtitle, 10, 70, 20);
             }
@@ -259,16 +265,28 @@ public class ElectricStormEvent extends BukkitRunnable {
         }
         skeleton.setHealth(40);
 
-        // Create enchanted helmet
         ItemStack helmet = new ItemStack(Material.IRON_HELMET);
-        helmet.addEnchantment(Enchantment.PROTECTION, 3);
+        Enchantment protection = Enchantment.getByKey(NamespacedKey.minecraft("protection"));
+        if (protection != null) {
+            helmet.addEnchantment(protection, 3);
+        } else {
+            throw new IllegalArgumentException("Enchantment 'protection' not found");
+        }
 
-        // Create enchanted bow
         ItemStack bow = new ItemStack(Material.BOW);
-        bow.addEnchantment(Enchantment.POWER, 3);
-        bow.addEnchantment(Enchantment.PUNCH, 1);
+        Enchantment power = Enchantment.getByKey(NamespacedKey.minecraft("power"));
+        Enchantment punch = Enchantment.getByKey(NamespacedKey.minecraft("punch"));
+        if (power != null) {
+            bow.addEnchantment(power, 3);
+        } else {
+            throw new IllegalArgumentException("Enchantment 'power' not found");
+        }
+        if (punch != null) {
+            bow.addEnchantment(punch, 1);
+        } else {
+            throw new IllegalArgumentException("Enchantment 'punch' not found");
+        }
 
-        // Equip skeleton with enchanted items
         Objects.requireNonNull(skeleton.getEquipment()).setHelmet(helmet);
         skeleton.getEquipment().setItemInMainHand(bow);
 
@@ -289,7 +307,7 @@ public class ElectricStormEvent extends BukkitRunnable {
 
             mobLocation = findValidLocation(mobLocation);
 
-            if (mobLocation != null) {
+            if (mobLocation != null && !IsInProtectedWGRegion(mobLocation)) {
                 EntityType mobType = getRandomMobType();
                 Entity mob;
                 if (mobType == EntityType.SKELETON_HORSE) {
@@ -299,6 +317,20 @@ public class ElectricStormEvent extends BukkitRunnable {
                     addMetadataToMob(mob, plugin);
                 }
             }
+        }
+    }
+
+    private boolean IsInProtectedWGRegion(Location location) {
+        try {
+            RegionContainer rc = WorldGuard.getInstance().getPlatform().getRegionContainer();
+            RegionQuery rq = rc.createQuery();
+            ApplicableRegionSet rs = rq.getApplicableRegions(BukkitAdapter.adapt(location));
+
+            if (rs == null || rs.size() == 0) return false;
+
+            return !rs.testState(null, Flags.MOB_SPAWNING);
+        } catch (NoClassDefFoundError e) {
+            return false;
         }
     }
 
@@ -313,16 +345,15 @@ public class ElectricStormEvent extends BukkitRunnable {
 
     private void spawnMobsNearPlayer(Player player) {
         Location playerLocation = player.getLocation();
-        int radius = 5; // Radio alrededor del jugador para generar mobs
+        int radius = 5;
 
-        for (int i = 0; i < 3; i++) { // Generar 3 mobs aleatorios
+        for (int i = 0; i < 3; i++) {
             int x = playerLocation.getBlockX() + random.nextInt(radius * 2) - radius;
             int z = playerLocation.getBlockZ() + random.nextInt(radius * 2) - radius;
             int y = playerLocation.getBlockY();
 
             Location mobLocation = new Location(player.getWorld(), x, y, z);
 
-            // Buscar una ubicación válida en el aire
             mobLocation = findValidLocation(mobLocation);
 
             if (mobLocation != null) {
@@ -336,7 +367,6 @@ public class ElectricStormEvent extends BukkitRunnable {
         World world = location.getWorld();
         if (world == null) return null;
 
-        // Buscar una ubicación en el aire hacia arriba y hacia abajo
         for (int y = location.getBlockY(); y < world.getMaxHeight(); y++) {
             Location checkLocation = new Location(world, location.getX(), y, location.getZ());
             if (checkLocation.getBlock().getType() == Material.AIR) {
@@ -349,7 +379,7 @@ public class ElectricStormEvent extends BukkitRunnable {
                 return checkLocation;
             }
         }
-        return null; // No se encontró una ubicación válida en el aire
+        return null;
     }
 
     private EntityType getRandomNetherMobType() {

@@ -1,57 +1,61 @@
 name: ClimaticEvents
 main: awt.breeze.climaticEvents.ClimaticEvents
-version: 1.0.1
+version: 1.2.0
 description: Plugin extreme climatic events
 api-version: 1.17
-softdepend: [PlaceholderAPI]
+softdepend:
+  - WorldGuard
+  - WorldEdit
+  - PlaceholderAPI
 commands:
   climaticevents:
-    description: Comandos para el plugin ClimaticEvents.
+    description: Commands for ClimaticEvents plugin.
     usage: /<command> <subcommand>
+    permission: climaticevents.admin
     aliases: [ce]
     children:
       reload:
-        description: Recarga la configuración del plugin ClimaticEvents.
+        description: Reload the plugin configuration.
         permission: climaticevents.reload
       resetdays:
-        description: Reiniciar los días de intervalo.
+        description: Reload the days interval.
         permission: climaticevents.resetdays
       startevent:
-        description: Inicia un evento aleatorio.
+        description: Start a random event.
         permission: climaticevents.startevent
       forcesolarflare:
-        description: Inicia el evento llamarada solar.
+        description: Start the solar flare event.
         permission: climaticevents.startevent
       forceacidrain:
-        description: Inicia el evento lluvia ácida.
+        description: Start the acid rain event.
         permission: climaticevents.startevent
-        forceelectricstorm:
-        description: Inicia el evento tormenta eléctrica.
+      forceelectricstorm:
+        description: Start the electric storm event.
         permission: climaticevents.startevent
       cancelevent:
-        description: Cancela el evento en curso.
+        description: Cancel the current event.
         permission: climaticevents.cancelevent
       nextevent:
-        description: Muestra el tiempo restante hasta el próximo evento.
+        description: Show the days remaining for the next event.
         permission: climaticevents.nextevent
         default: true
       spawnsolarboss:
-        description: Spawnear al boss solar.
+        description: Spawn the solar boss.
         permission: climaticevents.spawnboss
       spawnrainboss:
-        description: Spawnear al boss de lluvia ácida.
+        description: Spawn the rain boss.
         permission: climaticevents.spawnboss
       spawnstormboss:
-        description: Spawnear al boss de tormenta eléctrica.
+        description: Spawn the storm boss.
         permission: climaticevents.spawnboss
       killsolarboss:
-        description: Matar al boss solar.
+        description: Kill the solar boss.
         permission: climaticevents.killboss
       killrainboss:
-        description: Matar al boss de lluvia ácida.
+        description: Kill the rain boss.
         permission: climaticevents.killboss
       killstormboss:
-        description: Matar al boss de tormenta eléctrica.
+        description: Kill the storm boss.
         permission: climaticevents.killboss
       chest:
         description: Spawn chest drop.
@@ -72,6 +76,23 @@ commands:
         description: change mode.
         permission: climaticevents.mode
       newtime:
-        description: change interval day.
-        permission: climaticevents.mode
+        description: change interval days.
+        permission: climaticevents.newtime
 
+permissions:
+  climaticevents.admin:
+    description: Permission to use all commands.
+    default: op
+    children:
+      climaticevents.reload: true
+      climaticevents.resetdays: true
+      climaticevents.startevent: true
+      climaticevents.cancelevent: true
+      climaticevents.nextevent: true
+      climaticevents.spawnboss: true
+      climaticevents.killboss: true
+      climaticevents.chest: true
+      climaticevents.killchest: true
+      climaticevents.toggle: true
+      climaticevents.panel: true
+      climaticevents.mode: true
