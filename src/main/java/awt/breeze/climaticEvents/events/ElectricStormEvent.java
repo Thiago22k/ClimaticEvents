@@ -62,6 +62,7 @@ public class ElectricStormEvent extends BukkitRunnable {
     private final double bossSpawnProbability;
     private final String title;
     private final String subtitle;
+    private final boolean chestDrop;
 
     public ElectricStormEvent(JavaPlugin plugin, World world, FileConfiguration modesConfig) {
         this.world = world;
@@ -78,6 +79,7 @@ public class ElectricStormEvent extends BukkitRunnable {
         this.strikeLightningProbability = modesConfig.getDouble("electric_storm." + difficultyMode + ".strike_lightning_probability", 0.5);
         this.bossSpawnProbability = modesConfig.getDouble("electric_storm." + difficultyMode + ".boss_spawn_probability", 0.5);
         this.bossActive = modesConfig.getBoolean("electric_storm." + difficultyMode + ".enabled_boss", true);
+        this.chestDrop = plugin.getConfig().getBoolean("chest_drop", true);
         this.title = ChatColor.translateAlternateColorCodes('&', ((ClimaticEvents) plugin).getMessagesConfig().getString("electric_storm_title", "&bElectric Storm!"));
         this.subtitle = ChatColor.translateAlternateColorCodes('&', ((ClimaticEvents) plugin).getMessagesConfig().getString("electric_storm_subtitle", "&eSeek shelter from the storm"));
     }
@@ -159,8 +161,10 @@ public class ElectricStormEvent extends BukkitRunnable {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if (!((ClimaticEvents) plugin).chestDropManager.lootChestPlaced && running) {
-                        ((ClimaticEvents) plugin).chestDropManager.placeLootChest();
+                    if(chestDrop && running) {
+                        if (!((ClimaticEvents) plugin).chestDropManager.lootChestPlaced) {
+                            ((ClimaticEvents) plugin).chestDropManager.placeLootChest();
+                        }
                     }
                 }
             }.runTaskLater(this.plugin, 100L);

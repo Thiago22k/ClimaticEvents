@@ -6,24 +6,13 @@
 
     <groupId>awt.breeze</groupId>
     <artifactId>ClimaticEvents</artifactId>
-    <version>1</version>
+    <version>1.2.0</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*.yml</include>
-                </includes>
-            </resource>
-        </resources>
-    </build>
 
     <repositories>
         <repository>
@@ -66,4 +55,14 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.yml</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 </project>

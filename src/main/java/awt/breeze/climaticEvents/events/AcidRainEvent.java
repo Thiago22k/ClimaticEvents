@@ -49,6 +49,7 @@ public class AcidRainEvent extends BukkitRunnable {
     private final boolean bossActive;
     private final String title;
     private final String subtitle;
+    private final boolean chestDrop;
 
 
     public AcidRainEvent(JavaPlugin plugin, World world, FileConfiguration modesConfig) {
@@ -63,6 +64,7 @@ public class AcidRainEvent extends BukkitRunnable {
         this.netherProbabilitySpawn = modesConfig.getDouble("acid_rain." + difficultyMode + ".nether_mobs_probability", 0.5);
         this.bossSpawnProbability = modesConfig.getDouble("acid_rain." + difficultyMode + ".boss_spawn_probability", 0.5);
         this.bossActive = modesConfig.getBoolean("acid_rain." + difficultyMode + ".enabled_boss", true);
+        this.chestDrop = plugin.getConfig().getBoolean("chest_drop", true);
 
         this.title = ChatColor.translateAlternateColorCodes('&',  ((ClimaticEvents) plugin).getMessagesConfig().getString("acid_rain_title", "&cAcid rain!"));
         this.subtitle = ChatColor.translateAlternateColorCodes('&', ((ClimaticEvents) plugin).getMessagesConfig().getString("acid_rain_subtitle", "&eSeek shelter from the rain"));
@@ -136,8 +138,10 @@ public class AcidRainEvent extends BukkitRunnable {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if (!((ClimaticEvents) plugin).chestDropManager.lootChestPlaced && running) {
-                        ((ClimaticEvents) plugin).chestDropManager.placeLootChest();
+                    if (chestDrop && running) {
+                        if (!((ClimaticEvents) plugin).chestDropManager.lootChestPlaced) {
+                            ((ClimaticEvents) plugin).chestDropManager.placeLootChest();
+                        }
                     }
                 }
             }.runTaskLater(this.plugin, 100L);

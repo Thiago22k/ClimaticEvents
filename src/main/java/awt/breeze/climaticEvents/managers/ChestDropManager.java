@@ -1,6 +1,12 @@
 package awt.breeze.climaticEvents.managers;
 
 import awt.breeze.climaticEvents.ClimaticEvents;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -99,16 +105,33 @@ public class ChestDropManager {
         }
     }
 
+    private boolean isInProtectedWGRegion(Location location) {
+        try {
+            RegionContainer rc = WorldGuard.getInstance().getPlatform().getRegionContainer();
+            RegionQuery rq = rc.createQuery();
+            ApplicableRegionSet rs = rq.getApplicableRegions(BukkitAdapter.adapt(location));
+
+            if (rs == null || rs.size() == 0) return false;
+
+            return !rs.testState(null, Flags.CHEST_ACCESS);
+        } catch (NoClassDefFoundError e) {
+            return false;
+        }
+    }
+
     public void placeLootChest() {
         if (this.lootChestPlaced) return;
         this.lootChestPlaced = true;
 
-        int x = random.nextInt(this.radiusChestSpawn) - 100;
-        int z = random.nextInt(this.radiusChestSpawn) - 100;
-        int y = this.world.getHighestBlockYAt(x, z) + 1;
-        Location chestLocation = new Location(this.world, x, y, z);
-        Chunk chunk = chestLocation.getChunk();
+        Location chestLocation;
+        do {
+            int x = random.nextInt(this.radiusChestSpawn) - 100;
+            int z = random.nextInt(this.radiusChestSpawn) - 100;
+            int y = this.world.getHighestBlockYAt(x, z) + 1;
+            chestLocation = new Location(this.world, x, y, z);
+        } while (isInProtectedWGRegion(chestLocation));
 
+        Chunk chunk = chestLocation.getChunk();
         boolean wasChunkLoaded = chunk.isLoaded();
         if (!wasChunkLoaded) {
             chunk.load();
@@ -137,7 +160,7 @@ public class ChestDropManager {
         beaconStandParticles();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.sendMessage(((ClimaticEvents) plugin).getMessage("chest_loot_message") + x + ", " + y + ", " + z);
+            player.sendMessage(((ClimaticEvents) plugin).getMessage("chest_loot_message") + chestLocation.getBlockX() + ", " + chestLocation.getBlockY() + ", " + chestLocation.getBlockZ());
         }
 
         if (!wasChunkLoaded) {
