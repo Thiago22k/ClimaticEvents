@@ -2,7 +2,7 @@ solar_boss_bar_title: "&eSolar Flare Event"
 rain_boss_bar_title: "&bAcid Rain Event"
 storm_boss_bar_title: "&5Electric Storm Event"
 event_warning_content: |
-  &eA weather event is about to strike in 10 seconds!
+  &eA weather event is about to strike in %delay_time% seconds!
   
   &5Some mobs may spawn near players
   in the nether during the event.

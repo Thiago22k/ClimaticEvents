@@ -3,7 +3,7 @@ rain_boss_bar_title: "&bEvento Lluvia ácida"
 storm_boss_bar_title: "&5Evento Tormenta eléctrica"
 event_warning_content: |
   &e¡Un evento climático está a punto de golpear 
-  en 10 segundos!
+  en %delay_time% segundos!
   
   &5Algunos mobs podrán spawnear cerca de los jugadores
   que estén en el nether durante el evento.

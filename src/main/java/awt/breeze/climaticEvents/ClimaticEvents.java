@@ -43,6 +43,7 @@ public class ClimaticEvents extends JavaPlugin {
     public long nextEventTime;
     public boolean eventActive = false;
     private int intervalDays;
+    private int delayEventStart;
     private final Random random = new Random();
     public String prefix;
 
@@ -143,7 +144,8 @@ public class ClimaticEvents extends JavaPlugin {
                 saveResource("config.yml", false);
             }
             FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
-            intervalDays = config.getInt("interval_days", 7); //
+            intervalDays = config.getInt("interval_days", 7);
+            delayEventStart = config.getInt("delay_event_start", 10);
 
             saveResourceIfNotExists("modes/easy.yml");
             saveResourceIfNotExists("modes/normal.yml");
@@ -363,9 +365,10 @@ public class ClimaticEvents extends JavaPlugin {
 
             if (currentTime >= nextEventTime && !this.eventActive) {
                 if (enabled) {
-                    Bukkit.broadcastMessage(getFormattedMessage("event_warning_content"));
-                    nextEventTime = currentTime + 10 * 1000L;
-                    Bukkit.getScheduler().runTaskLater(this, this::startRandomEvent, 20L * 10);
+                    String eventWarning = this.getFormattedMessage("event_warning_content").replace("%delay_time%", String.valueOf(delayEventStart));
+                    Bukkit.broadcastMessage(eventWarning);
+                    nextEventTime = currentTime + delayEventStart * 1000L;
+                    Bukkit.getScheduler().runTaskLater(this, this::startRandomEvent, 20L * delayEventStart);
                     this.eventActive = true;
                 }
             }

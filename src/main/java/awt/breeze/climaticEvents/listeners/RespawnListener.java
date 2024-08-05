@@ -30,43 +30,33 @@ public class RespawnListener implements Listener {
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
         if (plugin.solarFlareEvent != null && plugin.solarFlareEvent.running) {
-            Player player = event.getPlayer();
             if (player.hasMetadata("solarFlareAffected")) {
                 player.sendMessage(plugin.getMessage("respawn_on_event"));
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        player.removeMetadata("solarFlareAffected", plugin);
-                    }
-                }.runTaskLater(plugin, 20L * 10);
+                scheduleMetadataRemoval(player, "solarFlareAffected");
             }
         }
         if (plugin.acidRainEvent != null && plugin.acidRainEvent.running) {
-            Player player = event.getPlayer();
             if (player.hasMetadata("acidRainAffected")) {
                 player.sendMessage(plugin.getMessage("respawn_on_event"));
+                scheduleMetadataRemoval(player, "acidRainAffected");
             }
-            new BukkitRunnable() {
-                @Override
-                public  void run() {
-                    player.removeMetadata("acidRainAffected", plugin);
-                }
-            }.runTaskLater(plugin, 20L * 10);
         }
         if (plugin.electricStormEvent != null && plugin.electricStormEvent.running) {
-            Player player = event.getPlayer();
             if (player.hasMetadata("electricStormAffected")) {
                 player.sendMessage(plugin.getMessage("respawn_on_event"));
+                scheduleMetadataRemoval(player, "electricStormAffected");
             }
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    player.removeMetadata("electricStormAffected", plugin);
-                }
-            }.runTaskLater(plugin, 20L * 10);
         }
     }
+
+    private void scheduleMetadataRemoval(Player player, String metadataKey) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                player.removeMetadata(metadataKey, plugin);
+            }
+        }.runTaskLater(plugin, 20L * 10);
+    }
 }
-
-
