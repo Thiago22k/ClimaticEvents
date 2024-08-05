@@ -1,6 +1,6 @@
 name: ClimaticEvents
 main: awt.breeze.climaticEvents.ClimaticEvents
-version: 1.2.0
+version: ${project.version}
 description: Plugin extreme climatic events
 api-version: 1.17
 softdepend:
