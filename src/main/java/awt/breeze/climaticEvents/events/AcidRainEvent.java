@@ -3,6 +3,7 @@ package awt.breeze.climaticEvents.events;
 import awt.breeze.climaticEvents.ClimaticEvents;
 import awt.breeze.climaticEvents.bosses.BossKiller;
 import awt.breeze.climaticEvents.bosses.RainBossSpawner;
+import awt.breeze.climaticEvents.managers.GlobalAmbientParticleTask;
 import  org.bukkit.*;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
@@ -24,6 +25,7 @@ import java.util.Set;
 public class AcidRainEvent extends BukkitRunnable {
     private final JavaPlugin plugin;
     private final World world;
+    private GlobalAmbientParticleTask particleTask;
     private final Random random = new Random();
     public boolean running;
     public static final String ACID_RAIN_METADATA_KEY = "onAcidRain";
@@ -114,6 +116,8 @@ public class AcidRainEvent extends BukkitRunnable {
     public void startEvent() {
         if(!this.running) {
             this.running = true;
+            particleTask = new GlobalAmbientParticleTask(Particle.CRIMSON_SPORE, 350, 20, 0.05);
+            particleTask.runTaskTimer(plugin, 0, 5);
             ((ClimaticEvents) plugin).chestDropManager.lootChestPlaced = false;
             runTaskTimer(this.plugin, 0L, 20L);
             this.plugin.getServer().getScheduler().runTaskLater(this.plugin, () -> this.running = false, 20L * this.durationSeconds);
@@ -168,6 +172,10 @@ public class AcidRainEvent extends BukkitRunnable {
         ((ClimaticEvents)plugin).eventActive = false;
         this.running = false;
         super.cancel();
+
+        if(particleTask != null){
+            particleTask.cancel();
+        }
 
         BossKiller bossKiller = new BossKiller(plugin);
         bossKiller.killRainBoss();

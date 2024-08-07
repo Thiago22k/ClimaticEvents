@@ -24,7 +24,7 @@ public class CommandHandler implements TabExecutor {
     private final String prefix;
 
     private static final List<String> SUBCOMMANDS = Arrays.asList(
-            "reload", "resetdays", "startevent", "cancelevent", "nextevent", "panel", "forcesolarflare", "forceacidrain", "forceelectricstorm",
+            "reload", "resetdays", "startevent", "cancelevent", "nextevent", "panel", "forcesolarflare", "forceacidrain", "forceelectricstorm", "help",
             "spawnsolarboss", "spawnstormboss", "spawnrainboss", "killsolarboss", "killrainboss", "killstormboss", "chest", "killchest", "on", "off", "mode"
     );
 
@@ -42,76 +42,60 @@ public class CommandHandler implements TabExecutor {
             }
 
             switch (args[0].toLowerCase()) {
-                case "mode":
-                    handleModeSelector(sender, args);
-                    break;
-                case "reload":
-                    handleReload(sender);
-                    break;
-                case "panel":
-                    handlePanel(sender);
-                    break;
-                case "resetdays":
-                    handleResetDays(sender);
-                    break;
-                case "startevent":
-                    handleStartEvent(sender);
-                    break;
-                case "forcesolarflare":
-                    handleStartSolarEvent(sender);
-                    break;
-                case "forceacidrain":
-                    handleStartRainEvent(sender);
-                    break;
-                case "forceelectricstorm":
-                    handleStartStormEvent(sender);
-                    break;
-                case "cancelevent":
-                    handleCancelEvent(sender);
-                    break;
-                case "nextevent":
-                    handleNextEvent(sender);
-                    break;
-                case "spawnsolarboss":
-                    handleSpawnSolarBoss(sender);
-                    break;
-                case "spawnrainboss":
-                    handleSpawnRainBoss(sender);
-                    break;
-                case "spawnstormboss":
-                    handleSpawnStormBoss(sender);
-                    break;
-                case "killsolarboss":
-                    handleKillSolarBoss(sender);
-                    break;
-                case "killrainboss":
-                    handleKillRainBoss(sender);
-                    break;
-                case "killstormboss":
-                    handleKillStormBoss(sender);
-                    break;
-                case "chest":
-                    handleChest(sender);
-                    break;
-                case "killchest":
-                    handleKillChest(sender);
-                    break;
-                case "on":
-                    handleOn(sender);
-                    break;
-                case "off":
-                    handleOff(sender);
-                    break;
-                case "newtime":
-                    handleNewTime(sender);
-                    break;
-                default:
-                    sender.sendMessage(prefix + "Unknown command. Usage: /climaticevents <command>");
-                    break;
+                case "reload" -> handleReload(sender);
+                case "panel" -> handlePanel(sender);
+                case "resetdays" -> handleResetDays(sender);
+                case "startevent" -> handleStartEvent(sender);
+                case "nextevent" -> handleNextEvent(sender);
+                case "newtime" -> handleNewTime(sender);
+                case "cancelevent" -> handleCancelEvent(sender);
+                case "forcesolarflare" -> handleStartSolarEvent(sender);
+                case "forceacidrain" -> handleStartRainEvent(sender);
+                case "forceelectricstorm" -> handleStartStormEvent(sender);
+                case "spawnsolarboss" -> handleSpawnSolarBoss(sender);
+                case "spawnrainboss" -> handleSpawnRainBoss(sender);
+                case "spawnstormboss" -> handleSpawnStormBoss(sender);
+                case "killsolarboss" -> handleKillSolarBoss(sender);
+                case "killrainboss" -> handleKillRainBoss(sender);
+                case "killstormboss" -> handleKillStormBoss(sender);
+                case "chest" -> handleChest(sender);
+                case "killchest" -> handleKillChest(sender);
+                case "on" -> handleOn(sender);
+                case "off" -> handleOff(sender);
+                case "mode" -> handleModeSelector(sender, args);
+                case "help" -> handleHelp(sender, args);
+                default -> sender.sendMessage(prefix + ((ClimaticEvents) plugin).getMessage("unknown_command"));
             }
             return true;
         }
         return false;
+    }
+
+    private void handleHelp(CommandSender sender, String[] args) {
+        int page = 1;
+
+        if (args.length == 2) {
+            try {
+                page = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                sender.sendMessage(prefix + ((ClimaticEvents) plugin).getMessage("invalid_page"));
+                return;
+            }
+        }
+
+        String helpMessage = switch (page) {
+            case 1 -> ((ClimaticEvents) plugin).getPage1Message("help_page_1");
+            case 2 -> ((ClimaticEvents) plugin).getPage2Message("help_page_2");
+            case 3 -> ((ClimaticEvents) plugin).getPage3Message("help_page_3");
+            default -> {
+                sender.sendMessage(prefix + ((ClimaticEvents) plugin).getMessage("invalid_page"));
+                yield null;
+            }
+        };
+
+        if (helpMessage != null) {
+            sender.sendMessage(helpMessage);
+        }
     }
 
     private void handleReload(CommandSender sender) {
@@ -473,6 +457,8 @@ public class CommandHandler implements TabExecutor {
                 return Stream.of("easy", "normal", "hard", "hardcore")
                         .filter(mode -> mode.startsWith(args[1].toLowerCase()))
                         .collect(Collectors.toList());
+            } else if (args.length == 2 && args[0].equalsIgnoreCase("help")) {
+                return Arrays.asList("1", "2", "3");
             }
         }
         return null;

@@ -1,3 +1,28 @@
+help_page_1: |
+  &e/climaticevents reload &r- Recarga la configuración.
+  &e/climaticevents resetdays &r- Restablece los días de inicio del evento.
+  &e/climaticevents startevent &r- Inicia un evento aleatorio.
+  &e/climaticevents cancelevent &r- Cancela el evento actual.
+  &e/climaticevents nextevent &r- Muestra el tiempo restante para el próximo evento.
+  &e/climaticevents on &r- Activa el plugin.
+  &e/climaticevents off &r- Desactiva el plugin.
+help_page_2: |
+  &e/climaticevents spawnsolarboss &r- Genera el jefe solar.
+  &e/climaticevents spawnrainboss &r- Genera el jefe de lluvia.
+  &e/climaticevents spawnstormboss &r- Genera el jefe de tormenta.
+  &e/climaticevents killsolarboss &r- Mata al jefe solar.
+  &e/climaticevents killrainboss &r- Mata al jefe de lluvia.
+  &e/climaticevents killstormboss &r- Mata al jefe de tormenta.
+  &e/climaticevents mode &r- Establece el modo de dificultad.
+help_page_3: |
+  &e/climaticevents forcesolarflare &r- Forzar el inicio de la llamarada solar.
+  &e/climaticevents forceacidrain &r- Forzar el inicio de la lluvia ácida.
+  &e/climaticevents forceelectricstorm &r- Forzar el inicio de la tormenta eléctrica.
+   &e/climaticevents chest &r- Genera el cofre del evento.
+  &e/climaticevents killchest &r- Mata el cofre del evento.
+  &e/climaticevents panel &r- Abre el panel de control.
+invalid_page: "Número de pagína inválido. Usa: &e/climaticevents help <page>"
+unknown_command: "Comando desconocido. Usa: /climaticevents <command>"
 solar_boss_bar_title: "&eEvento Llamarada Solar"
 rain_boss_bar_title: "&bEvento Lluvia ácida"
 storm_boss_bar_title: "&5Evento Tormenta eléctrica"

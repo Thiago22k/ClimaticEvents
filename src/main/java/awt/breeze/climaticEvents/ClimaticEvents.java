@@ -254,6 +254,25 @@ public class ClimaticEvents extends JavaPlugin {
         return ChatColor.translateAlternateColorCodes('&', prefix + messageContent + suffix);
     }
 
+    public String getPage1Message(String key) {
+        String prefix = "-----------| &lClimatic&d&lEvents&r |-----------\n\n";
+        String suffix = "\n\n&r--------------| &epage&r 1/3 |--------------";
+        String messageContent = getMessage(key);
+        return ChatColor.translateAlternateColorCodes('&', prefix + messageContent + suffix);
+    }
+    public String getPage2Message(String key) {
+        String prefix = "-----------| &lClimatic&d&lEvents&r |-----------\n\n";
+        String suffix = "\n\n&r--------------| &epage&r 2/3 |--------------";
+        String messageContent = getMessage(key);
+        return ChatColor.translateAlternateColorCodes('&', prefix + messageContent + suffix);
+    }
+    public String getPage3Message(String key) {
+        String prefix = "-----------| &lClimatic&d&lEvents&r |-----------\n\n";
+        String suffix = "\n\n&r--------------| &epage&r 3/3 |--------------";
+        String messageContent = getMessage(key);
+        return ChatColor.translateAlternateColorCodes('&', prefix + messageContent + suffix);
+    }
+
     private void updateProgressBarTitle() {
         if (solarProgressBarManager != null) {
             String newTitle = getMessage("solar_boss_bar_title");

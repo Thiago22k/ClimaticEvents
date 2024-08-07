@@ -5,6 +5,7 @@ import java.util.*;
 import awt.breeze.climaticEvents.ClimaticEvents;
 import awt.breeze.climaticEvents.bosses.BossKiller;
 import awt.breeze.climaticEvents.bosses.SolarBossSpawner;
+import awt.breeze.climaticEvents.managers.GlobalAmbientParticleTask;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
@@ -18,6 +19,7 @@ public class SolarFlareEvent extends BukkitRunnable {
     private final World world;
     public boolean running;
     private final Random random = new Random();
+    private GlobalAmbientParticleTask particleTask;
     public static final String SOLAR_FLARE_METADATA_KEY = "onSolarFlare";
 
     private final int damagePerSeconds;
@@ -87,6 +89,8 @@ public class SolarFlareEvent extends BukkitRunnable {
     public void startEvent() {
         if (!this.running) {
             this.running = true;
+            particleTask = new GlobalAmbientParticleTask(Particle.CRIMSON_SPORE,350,20,0.05);
+            particleTask.runTaskTimer(plugin, 0, 5);
             ((ClimaticEvents) plugin).chestDropManager.lootChestPlaced = false;
             runTaskTimer(this.plugin, 0L, 20L * this.damageIntervalSeconds);
             this.plugin.getServer().getScheduler().runTaskLater(this.plugin, () -> this.running = false, 20L * this.durationSeconds);
@@ -142,6 +146,11 @@ public class SolarFlareEvent extends BukkitRunnable {
         this.running = false;
         ((ClimaticEvents)plugin).eventActive = false;
         super.cancel();
+
+        if(particleTask != null){
+            particleTask.cancel();
+        }
+
         ((ClimaticEvents) plugin).clearPlayerMetadata();
 
         ((ClimaticEvents) plugin).chestDropManager.killChest();

@@ -1,3 +1,28 @@
+help_page_1: |
+  &e/climaticevents reload &r- Reloads the configuration.
+  &e/climaticevents resetdays &r- Resets the event days.
+  &e/climaticevents startevent &r- Starts a random event.
+  &e/climaticevents cancelevent &r- Cancels the current event.
+  &e/climaticevents nextevent &r- Shows the time remaining for the next event.
+  &e/climaticevents on &r- Turns the plugin on.
+  &e/climaticevents off &r- Turns the plugin off.
+help_page_2: |
+  &e/climaticevents spawnsolarboss &r- Spawns the solar boss.
+  &e/climaticevents spawnrainboss &r- Spawns the rain boss.
+  &e/climaticevents spawnstormboss &r- Spawns the storm boss.
+  &e/climaticevents killsolarboss &r- Kills the solar boss.
+  &e/climaticevents killrainboss &r- Kills the rain boss.
+  &e/climaticevents killstormboss &r- Kills the storm boss.
+  &e/climaticevents mode &r- Sets the difficulty mode.
+help_page_3: |
+  &e/climaticevents forcesolarflare &r- Forces a solar flare event.
+  &e/climaticevents forceacidrain &r- Forces an acid rain event.
+  &e/climaticevents forceelectricstorm &r- Forces an electric storm event.
+  &e/climaticevents chest &r- spawn event chest.
+  &e/climaticevents killchest &r- Kills the event chest.
+  &e/climaticevents panel &r- Opens the control panel.
+invalid_page: "Invalid page number. Usage: &e/climaticevents help <page>"
+unknown_command: "Unknown command. Usage: /climaticevents <command>"
 solar_boss_bar_title: "&eSolar Flare Event"
 rain_boss_bar_title: "&bAcid Rain Event"
 storm_boss_bar_title: "&5Electric Storm Event"
