@@ -59,6 +59,7 @@ public class ClimaticEvents extends JavaPlugin {
         loadConfigurations();
 
         Metrics metrics = new Metrics(this, 22859);
+        metrics.addCustomChart(new Metrics.SimplePie("mode", () -> this.getConfig().getString("mode", "default_value")));
 
         BossBar rainEventProgressBar = Bukkit.createBossBar(getMessage("rain_boss_bar_title"), BarColor.BLUE, BarStyle.SEGMENTED_6);
         rainProgressBarManager = new RainProgressBarManager(this, rainEventProgressBar);

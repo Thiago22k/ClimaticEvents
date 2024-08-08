@@ -120,7 +120,6 @@ public class Metrics {
         builder.appendField("osArch", System.getProperty("os.arch"));
         builder.appendField("osVersion", System.getProperty("os.version"));
         builder.appendField("coreCount", Runtime.getRuntime().availableProcessors());
-        builder.appendField("mode", plugin.getConfig().getString("mode"));
     }
 
     private void appendServiceData(JsonObjectBuilder builder) {
