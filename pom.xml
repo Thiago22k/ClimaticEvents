@@ -6,7 +6,7 @@
 
     <groupId>awt.breeze</groupId>
     <artifactId>ClimaticEvents</artifactId>
-    <version>1.2.3 SNAPSHOT</version>
+    <version>1.2.3</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
