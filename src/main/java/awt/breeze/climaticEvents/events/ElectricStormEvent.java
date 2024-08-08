@@ -107,7 +107,7 @@ public class ElectricStormEvent extends BukkitRunnable {
 
             if (isPlayerExposedToStorm(player) && !player.hasMetadata("electricStormAffected")) {
                 player.setMetadata(ELECTRIC_STORM_METADATA_KEY, new FixedMetadataValue(plugin, true));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.getById(2), 20, 1, false, false));
+                player.addPotionEffect(new PotionEffect(Objects.requireNonNull(PotionEffectType.getById(2)), 20, 1, false, false));
                 player.damage(damagePerSeconds);
                 player.sendTitle(this.title, this.subtitle, 10, 70, 20);
             }

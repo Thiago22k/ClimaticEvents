@@ -12,6 +12,7 @@ acid_rain:
   normal:
     enabled_boss: true
     boss_spawn_probability: 0.5
+    rain_mobs_probability: 0.4
     duration_seconds: 240
     duration_poison_effect: 3
     damage_per_seconds: 2

@@ -4,11 +4,18 @@ import awt.breeze.climaticEvents.ClimaticEvents;
 import awt.breeze.climaticEvents.bosses.BossKiller;
 import awt.breeze.climaticEvents.bosses.RainBossSpawner;
 import awt.breeze.climaticEvents.managers.GlobalAmbientParticleTask;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import  org.bukkit.*;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -29,6 +36,7 @@ public class AcidRainEvent extends BukkitRunnable {
     private final Random random = new Random();
     public boolean running;
     public static final String ACID_RAIN_METADATA_KEY = "onAcidRain";
+    public static final String ACID_RAIN_MOB_METADATA_KEY = "acidRainMob";
     private final Set<Biome> noRainBiomes = EnumSet.of(
             Biome.DESERT,
             Biome.SAVANNA,
@@ -47,6 +55,7 @@ public class AcidRainEvent extends BukkitRunnable {
     private final int damagePerSeconds;
     private final int durationPoisonEffect;
     private final double netherProbabilitySpawn;
+    private final double rainMobsProbability;
     private final double bossSpawnProbability;
     private final boolean bossActive;
     private final String title;
@@ -64,6 +73,7 @@ public class AcidRainEvent extends BukkitRunnable {
         this.damagePerSeconds = modesConfig.getInt("acid_rain." + difficultyMode + ".damage_per_seconds", 1);
         this.durationPoisonEffect = modesConfig.getInt("acid_rain." + difficultyMode + "duration_poison_effect", 3);
         this.netherProbabilitySpawn = modesConfig.getDouble("acid_rain." + difficultyMode + ".nether_mobs_probability", 0.5);
+        this.rainMobsProbability = modesConfig.getDouble("acid_rain." + difficultyMode + ".rain_mobs_probability", 0.5);
         this.bossSpawnProbability = modesConfig.getDouble("acid_rain." + difficultyMode + ".boss_spawn_probability", 0.5);
         this.bossActive = modesConfig.getBoolean("acid_rain." + difficultyMode + ".enabled_boss", true);
         this.chestDrop = plugin.getConfig().getBoolean("chest_drop", true);
@@ -142,6 +152,23 @@ public class AcidRainEvent extends BukkitRunnable {
             new BukkitRunnable() {
                 @Override
                 public void run() {
+                    if (!running) {
+                        this.cancel();
+                        return;
+                    }
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        if (player.getWorld().getEnvironment() == World.Environment.NORMAL) {
+                            if (random.nextDouble() < rainMobsProbability) {
+                                spawnRainMobsNearPlayer(player);
+                            }
+                        }
+                    }
+                }
+            }.runTaskTimer(this.plugin, 0, 20 * 15);
+
+            new BukkitRunnable() {
+                @Override
+                public void run() {
                     if (chestDrop && running) {
                         if (!((ClimaticEvents) plugin).chestDropManager.lootChestPlaced) {
                             ((ClimaticEvents) plugin).chestDropManager.placeLootChest();
@@ -190,6 +217,50 @@ public class AcidRainEvent extends BukkitRunnable {
         for (Player player : this.world.getPlayers()) {
             player.playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0F, 1.0F);
             player.removeMetadata(ACID_RAIN_METADATA_KEY, plugin);
+        }
+        for (Entity entity : world.getEntities()) {
+            if (entity.hasMetadata(ACID_RAIN_MOB_METADATA_KEY)) {
+                entity.remove();
+            }
+        }
+    }
+
+    private void addMetadataToMob(Entity entity, JavaPlugin plugin) {
+        entity.setMetadata(AcidRainEvent.ACID_RAIN_MOB_METADATA_KEY, new FixedMetadataValue(plugin, true));
+    }
+
+    private void spawnRainMobsNearPlayer(Player player) {
+        Location playerLocation = player.getLocation();
+        int radius = 5;
+
+        for (int i = 0; i < 3; i++) {
+            int x = playerLocation.getBlockX() + random.nextInt(radius * 2) - radius;
+            int z = playerLocation.getBlockZ() + random.nextInt(radius * 2) - radius;
+            int y = playerLocation.getBlockY();
+
+            Location mobLocation = new Location(player.getWorld(), x, y, z);
+
+            mobLocation = findValidLocation(mobLocation);
+
+            if (mobLocation != null && !IsInProtectedWGRegion(mobLocation)) {
+                EntityType mobType = EntityType.SLIME;
+                Entity mob = player.getWorld().spawnEntity(mobLocation, mobType);
+                addMetadataToMob(mob, plugin);
+            }
+        }
+    }
+
+    private boolean IsInProtectedWGRegion(Location location) {
+        try {
+            RegionContainer rc = WorldGuard.getInstance().getPlatform().getRegionContainer();
+            RegionQuery rq = rc.createQuery();
+            ApplicableRegionSet rs = rq.getApplicableRegions(BukkitAdapter.adapt(location));
+
+            if (rs == null || rs.size() == 0) return false;
+
+            return !rs.testState(null, Flags.MOB_SPAWNING);
+        } catch (NoClassDefFoundError e) {
+            return false;
         }
     }
 
