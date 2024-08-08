@@ -20,9 +20,10 @@ delay_event_start: 10
 
 # Set the radius of the chest spawn.
 # The radius is the distance in blocks that the chest will spawn from the 0,0 coordinates.
-# we recommend to set a value between 500 and 1000.
+# It is preferable that the set radius is preloaded.
+# We recommend to set a value between 500 and 1000.
 radius_chest_spawn: 500
 
-# enable or disable the spawn of the chest during the events.
+# Enable or disable the spawn of the chest during the events.
 chest_drop: true
 

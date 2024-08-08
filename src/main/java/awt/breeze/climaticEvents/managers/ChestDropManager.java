@@ -31,14 +31,11 @@ public class ChestDropManager {
     public Block lootChestBlock;
     public ArmorStand lootBeaconStand;
     public boolean lootChestPlaced = false;
-    private final int radiusChestSpawn;
 
     public ChestDropManager(JavaPlugin plugin, World world) {
         this.plugin = plugin;
         this.world = world;
         this.random = new Random();
-
-        this.radiusChestSpawn = plugin.getConfig().getInt("radius_chest_spawn", 500);
         this.lootTable = loadLootTable(((ClimaticEvents) plugin).getChestLootConfig());
     }
 
@@ -121,51 +118,69 @@ public class ChestDropManager {
 
     public void placeLootChest() {
         if (this.lootChestPlaced) return;
+        int radiusChestSpawn = plugin.getConfig().getInt("radius_chest_spawn");
         this.lootChestPlaced = true;
 
-        Location chestLocation;
-        do {
-            int x = random.nextInt(this.radiusChestSpawn) - 100;
-            int z = random.nextInt(this.radiusChestSpawn) - 100;
-            int y = this.world.getHighestBlockYAt(x, z) + 1;
-            chestLocation = new Location(this.world, x, y, z);
-        } while (isInProtectedWGRegion(chestLocation));
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Location chestLocation;
+                Block blockBelow;
+                int attempts = 0;
+                int maxAttempts = 100;
 
-        Chunk chunk = chestLocation.getChunk();
-        boolean wasChunkLoaded = chunk.isLoaded();
-        if (!wasChunkLoaded) {
-            chunk.load();
-        }
+                do {
+                    int x = random.nextInt(radiusChestSpawn * 2) - radiusChestSpawn;
+                    int z = random.nextInt(radiusChestSpawn * 2) - radiusChestSpawn;
+                    int y = world.getHighestBlockYAt(x, z);
+                    chestLocation = new Location(world, x, y + 1, z);
+                    blockBelow = world.getBlockAt(x, y, z);
 
-        Block block = this.world.getBlockAt(chestLocation);
-        block.setType(Material.CHEST);
-        lootChestBlock = block;
-        Chest chest = (Chest) block.getState();
-        Inventory inventory = chest.getInventory();
+                    Chunk chunk = chestLocation.getChunk();
+                    if (!chunk.isLoaded()) {
+                        continue;
+                    }
 
-        for (LootItemManager lootItemManager : this.lootTable) {
-            if (random.nextDouble() <= lootItemManager.getProbability()) {
-                int amount = random.nextInt(lootItemManager.getMaxAmount() - lootItemManager.getMinAmount() + 1) + lootItemManager.getMinAmount();
-                ItemStack itemStack = lootItemManager.toItemStack(amount);
-                inventory.addItem(itemStack);
+                    attempts++;
+
+                    if (attempts >= maxAttempts) {
+                        Bukkit.getLogger().info(((ClimaticEvents) plugin).getMessage("chest_location_not_found").replace("%attempts%", String.valueOf(maxAttempts)));
+                        lootChestPlaced = false;
+                        return;
+                    }
+
+                } while (blockBelow.getType() == Material.WATER || isInProtectedWGRegion(chestLocation));
+
+                Location finalChestLocation = chestLocation;
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    Block block = world.getBlockAt(finalChestLocation);
+                    block.setType(Material.CHEST);
+                    lootChestBlock = block;
+                    Chest chest = (Chest) block.getState();
+                    Inventory inventory = chest.getInventory();
+
+                    for (LootItemManager lootItemManager : lootTable) {
+                        if (random.nextDouble() <= lootItemManager.getProbability()) {
+                            int amount = random.nextInt(lootItemManager.getMaxAmount() - lootItemManager.getMinAmount() + 1) + lootItemManager.getMinAmount();
+                            ItemStack itemStack = lootItemManager.toItemStack(amount);
+                            inventory.addItem(itemStack);
+                        }
+                    }
+
+                    Location beaconLocation = finalChestLocation.clone().add(0, 1, 0);
+                    lootBeaconStand = (ArmorStand) world.spawnEntity(beaconLocation, EntityType.ARMOR_STAND);
+                    lootBeaconStand.setVisible(false);
+                    lootBeaconStand.setGravity(false);
+                    lootBeaconStand.setMarker(true);
+
+                    beaconStandParticles();
+
+                    for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                        onlinePlayer.sendMessage(((ClimaticEvents) plugin).getMessage("chest_loot_message") + finalChestLocation.getBlockX() + ", " + finalChestLocation.getBlockY() + ", " + finalChestLocation.getBlockZ());
+                    }
+                });
             }
-        }
-
-        Location beaconLocation = chestLocation.clone().add(0, 1, 0);
-        lootBeaconStand = (ArmorStand) this.world.spawnEntity(beaconLocation, EntityType.ARMOR_STAND);
-        lootBeaconStand.setVisible(false);
-        lootBeaconStand.setGravity(false);
-        lootBeaconStand.setMarker(true);
-
-        beaconStandParticles();
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            player.sendMessage(((ClimaticEvents) plugin).getMessage("chest_loot_message") + chestLocation.getBlockX() + ", " + chestLocation.getBlockY() + ", " + chestLocation.getBlockZ());
-        }
-
-        if (!wasChunkLoaded) {
-            chunk.unload();
-        }
+        }.runTaskAsynchronously(plugin);
     }
 
     private void beaconStandParticles() {

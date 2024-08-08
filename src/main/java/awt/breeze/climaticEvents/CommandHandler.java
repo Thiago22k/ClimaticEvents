@@ -362,11 +362,10 @@ public class CommandHandler implements TabExecutor {
         }
     }
 
-    private void handleChest(CommandSender sender) {
+    public void handleChest(CommandSender sender) {
         if (sender.hasPermission("climaticevents.chest")) {
-            if (((ClimaticEvents) plugin).solarFlareEvent != null) {
                 ((ClimaticEvents) plugin).chestDropManager.placeLootChest();
-            }
+                sender.sendMessage(prefix + ((ClimaticEvents) plugin).getMessage("search_chest_location"));
         } else {
             sender.sendMessage(prefix + ((ClimaticEvents) plugin).getMessage("no_permission"));
         }
