@@ -50,6 +50,12 @@ public class ClimaticEvents extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        String currentVersion = getDescription().getVersion();
+        String modrinthProjectId = "n7aoHAjT";
+
+        VersionChecker versionChecker = new VersionChecker(this, currentVersion, modrinthProjectId);
+        versionChecker.checkForUpdates();
+
         loadConfigurations();
 
         Metrics metrics = new Metrics(this, 22859);

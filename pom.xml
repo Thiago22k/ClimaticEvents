@@ -6,7 +6,7 @@
 
     <groupId>awt.breeze</groupId>
     <artifactId>ClimaticEvents</artifactId>
-    <version>1.2.2</version>
+    <version>1.2.3 SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -35,7 +35,6 @@
             <artifactId>maven-resources-plugin</artifactId>
             <version>3.3.1</version>
         </dependency>
-
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-bukkit</artifactId>
