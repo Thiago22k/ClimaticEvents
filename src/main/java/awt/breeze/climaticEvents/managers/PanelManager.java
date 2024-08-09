@@ -95,7 +95,11 @@ public class PanelManager {
         item.setItemMeta(meta);
         panel.setItem(44, item);
 
-        item = new ItemStack(Material.RECOVERY_COMPASS);
+        if (Material.getMaterial("RECOVERY_COMPASS") != null) {
+            item = new ItemStack(Material.RECOVERY_COMPASS);
+        } else {
+            item = new ItemStack(Material.COMPASS);
+        }
         meta = item.getItemMeta();
         assert meta != null;
         meta.setDisplayName(ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_random_event_name", "&6Random Event")));
@@ -265,7 +269,7 @@ public class PanelManager {
         item.setItemMeta(meta);
         panel.setItem(29, item);
 
-        item = new ItemStack(Material.ALLAY_SPAWN_EGG);
+        item = new ItemStack(Material.AXOLOTL_SPAWN_EGG);
         meta = item.getItemMeta();
         assert meta != null;
         meta.setDisplayName(ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_rain_boss_name", "&6Rain Boss")));

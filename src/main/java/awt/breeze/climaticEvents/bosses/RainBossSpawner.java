@@ -143,6 +143,7 @@ public class RainBossSpawner {
             PotionEffectType strength = PotionEffectType.getById(5);
             PotionEffectType resistance = PotionEffectType.getById(11);
             PotionEffectType fireResistance = PotionEffectType.getById(12);
+            PotionEffectType oozing = null;
 
             if (strength != null) {
                 boss.addPotionEffect(new PotionEffect(strength, Integer.MAX_VALUE, 1));
@@ -160,6 +161,19 @@ public class RainBossSpawner {
                 boss.addPotionEffect(new PotionEffect(fireResistance, Integer.MAX_VALUE, 1));
             } else {
                 Bukkit.getLogger().warning("FIRE_RESISTANCE potion effect type not found!");
+            }
+
+            try {
+                oozing = PotionEffectType.getByName("OOZING");
+            } catch (NoSuchFieldError | NoSuchMethodError ignored) {
+            }
+
+            try {
+                if (oozing != null) {
+                    boss.addPotionEffect(new PotionEffect(oozing, Integer.MAX_VALUE, 1));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             String bossSpawnedMessage = ((ClimaticEvents) plugin).getMessage("rain_boss_spawned").replace("%player%", player.getName());
