@@ -61,6 +61,7 @@ public class AcidRainEvent extends BukkitRunnable {
     private final String title;
     private final String subtitle;
     private final boolean chestDrop;
+    private final boolean removeMobs;
 
 
     public AcidRainEvent(JavaPlugin plugin, World world, FileConfiguration modesConfig) {
@@ -77,6 +78,7 @@ public class AcidRainEvent extends BukkitRunnable {
         this.bossSpawnProbability = modesConfig.getDouble("acid_rain." + difficultyMode + ".boss_spawn_probability", 0.5);
         this.bossActive = modesConfig.getBoolean("acid_rain." + difficultyMode + ".enabled_boss", true);
         this.chestDrop = plugin.getConfig().getBoolean("chest_drop", true);
+        this.removeMobs = plugin.getConfig().getBoolean("remove_mobs_after_events", true);
 
         this.title = ChatColor.translateAlternateColorCodes('&',  ((ClimaticEvents) plugin).getMessagesConfig().getString("acid_rain_title", "&cAcid rain!"));
         this.subtitle = ChatColor.translateAlternateColorCodes('&', ((ClimaticEvents) plugin).getMessagesConfig().getString("acid_rain_subtitle", "&eSeek shelter from the rain"));
@@ -204,9 +206,6 @@ public class AcidRainEvent extends BukkitRunnable {
             particleTask.cancel();
         }
 
-        BossKiller bossKiller = new BossKiller(plugin);
-        bossKiller.killRainBoss();
-
         ((ClimaticEvents) plugin).chestDropManager.killChest();
 
         ((ClimaticEvents) plugin).rainProgressBarManager.stopProgressBar();
@@ -218,9 +217,13 @@ public class AcidRainEvent extends BukkitRunnable {
             player.playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0F, 1.0F);
             player.removeMetadata(ACID_RAIN_METADATA_KEY, plugin);
         }
-        for (Entity entity : world.getEntities()) {
-            if (entity.hasMetadata(ACID_RAIN_MOB_METADATA_KEY)) {
-                entity.remove();
+        if(removeMobs){
+            BossKiller bossKiller = new BossKiller(plugin);
+            bossKiller.killRainBoss();
+            for (Entity entity : world.getEntities()) {
+                if (entity.hasMetadata(ACID_RAIN_MOB_METADATA_KEY)) {
+                    entity.remove();
+                }
             }
         }
     }

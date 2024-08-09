@@ -215,8 +215,9 @@ public class ClimaticEvents extends JavaPlugin {
         BossKiller bossKiller = new BossKiller(this);
         bossKiller.killSolarBoss();
         bossKiller.killRainBoss();
+        bossKiller.killStormBoss();
         for (Entity entity : world.getEntities()) {
-            if (entity.hasMetadata("electricStormMob")) {
+            if(entity.hasMetadata("electricStormMob") || entity.hasMetadata("acidRainMob")){
                 entity.remove();
             }
         }
@@ -255,27 +256,29 @@ public class ClimaticEvents extends JavaPlugin {
     }
 
     public String getFormattedMessage(String key) {
-        String prefix = "-----------| &lClimatic&d&lEvents&r |-----------\n\n";
-        String suffix = "\n\n&r--------------------------------------";
+        String prefix = this.getConfig().getString("messages.prefix", "");
+        String suffix = this.getConfig().getString("messages.suffix", "");
         String messageContent = getMessage(key);
         return ChatColor.translateAlternateColorCodes('&', prefix + messageContent + suffix);
     }
 
     public String getPage1Message(String key) {
-        String prefix = "-----------| &lClimatic&d&lEvents&r |-----------\n\n";
-        String suffix = "\n\n&r--------------| &epage&r 1/3 |--------------";
+        String prefix = this.getConfig().getString("messages.prefix", "");
+        String suffix = this.getConfig().getString("messages.page_suffix.page_1", "");
         String messageContent = getMessage(key);
         return ChatColor.translateAlternateColorCodes('&', prefix + messageContent + suffix);
     }
+
     public String getPage2Message(String key) {
-        String prefix = "-----------| &lClimatic&d&lEvents&r |-----------\n\n";
-        String suffix = "\n\n&r--------------| &epage&r 2/3 |--------------";
+        String prefix = this.getConfig().getString("messages.prefix", "");
+        String suffix = this.getConfig().getString("messages.page_suffix.page_2", "");
         String messageContent = getMessage(key);
         return ChatColor.translateAlternateColorCodes('&', prefix + messageContent + suffix);
     }
+
     public String getPage3Message(String key) {
-        String prefix = "-----------| &lClimatic&d&lEvents&r |-----------\n\n";
-        String suffix = "\n\n&r--------------| &epage&r 3/3 |--------------";
+        String prefix = this.getConfig().getString("messages.prefix", "");
+        String suffix = this.getConfig().getString("messages.page_suffix.page_3", "");
         String messageContent = getMessage(key);
         return ChatColor.translateAlternateColorCodes('&', prefix + messageContent + suffix);
     }

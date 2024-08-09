@@ -1,4 +1,5 @@
 # This file is used to configure the general settings of the plugin.
+# After changing and saving the options you must reload the plugin. Use "/climaticevents reload".
 # You can use the "/climaticevents panel" command to better configure the plugin in-game.
 
 # The languages available at the moment are: es, en (spanish, english).
@@ -26,4 +27,19 @@ radius_chest_spawn: 500
 
 # Enable or disable the spawn of the chest during the events.
 chest_drop: true
+
+# Removes mobs generated during events at the end of an event. This includes the bosses.
+# This option can help to save resources and improve performance.
+remove_mobs_after_events: true
+
+# Use \n\n to make a line break
+# Leave messages empty to remove prefixes and suffixes ("").
+messages:
+  prefix: "-----------| &lClimatic&d&lEvents&r |-----------\n\n"
+  suffix: "\n\n&r--------------------------------------"
+  page_suffix:
+    page_1: "\n\n&r--------------| &epage&r 1/3 |--------------"
+    page_2: "\n\n&r--------------| &epage&r 2/3 |--------------"
+    page_3: "\n\n&r--------------| &epage&r 3/3 |--------------"
+
 

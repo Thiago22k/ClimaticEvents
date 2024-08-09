@@ -1,23 +1,27 @@
 package awt.breeze.climaticEvents.listeners;
 
 import awt.breeze.climaticEvents.ClimaticEvents;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Slime;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class MobsDeathListener implements Listener {
     private final JavaPlugin plugin;
     private final Random random = new Random();
+    private static final String ACID_RAIN_MOB_METADATA_KEY = "acidRainMob";
+    private final Set<Location> slimeLargeLocations = new HashSet<>();
 
     public MobsDeathListener(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -48,5 +52,28 @@ public class MobsDeathListener implements Listener {
                 }
             }
         }
+        if (entity instanceof Slime slime) {
+            if (slime.getSize() > 1) {
+                slimeLargeLocations.add(slime.getLocation());
+            }
+        }
+    }
+    @EventHandler
+    public void onSlimeSpawn(EntitySpawnEvent event) {
+        Entity entity = event.getEntity();
+
+        if (entity instanceof Slime slime) {
+            Location slimeLocation = slime.getLocation();
+            for (Location largeSlimeLocation : slimeLargeLocations) {
+                if (Objects.equals(largeSlimeLocation.getWorld(), slimeLocation.getWorld()) &&
+                        largeSlimeLocation.distance(slimeLocation) <= 5) {
+                    addMetadataToMob(slime);
+                    break;
+                }
+            }
+        }
+    }
+    private void addMetadataToMob(Entity entity) {
+        entity.setMetadata(ACID_RAIN_MOB_METADATA_KEY, new FixedMetadataValue(plugin, true));
     }
 }

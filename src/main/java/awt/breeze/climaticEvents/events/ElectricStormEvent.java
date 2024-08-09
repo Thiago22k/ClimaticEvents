@@ -63,6 +63,7 @@ public class ElectricStormEvent extends BukkitRunnable {
     private final String title;
     private final String subtitle;
     private final boolean chestDrop;
+    private final boolean removeMobs;
 
     public ElectricStormEvent(JavaPlugin plugin, World world, FileConfiguration modesConfig) {
         this.world = world;
@@ -80,6 +81,7 @@ public class ElectricStormEvent extends BukkitRunnable {
         this.bossSpawnProbability = modesConfig.getDouble("electric_storm." + difficultyMode + ".boss_spawn_probability", 0.5);
         this.bossActive = modesConfig.getBoolean("electric_storm." + difficultyMode + ".enabled_boss", true);
         this.chestDrop = plugin.getConfig().getBoolean("chest_drop", true);
+        this.removeMobs = plugin.getConfig().getBoolean("remove_mobs_after_events", true);
         this.title = ChatColor.translateAlternateColorCodes('&', ((ClimaticEvents) plugin).getMessagesConfig().getString("electric_storm_title", "&bElectric Storm!"));
         this.subtitle = ChatColor.translateAlternateColorCodes('&', ((ClimaticEvents) plugin).getMessagesConfig().getString("electric_storm_subtitle", "&eSeek shelter from the storm"));
     }
@@ -226,9 +228,6 @@ public class ElectricStormEvent extends BukkitRunnable {
         this.running = false;
         super.cancel();
 
-        BossKiller bossKiller = new BossKiller(plugin);
-        bossKiller.killStormBoss();
-
         ChestDropManager chestDropManager = ((ClimaticEvents) plugin).chestDropManager;
         chestDropManager.killChest();
 
@@ -243,12 +242,15 @@ public class ElectricStormEvent extends BukkitRunnable {
             player.removeMetadata(ELECTRIC_STORM_METADATA_KEY, plugin);
         }
 
-        for (Entity entity : world.getEntities()) {
-            if (entity.hasMetadata(ELECTRIC_STORM_MOB_METADATA_KEY)) {
-                entity.remove();
+        if(removeMobs) {
+            BossKiller bossKiller = new BossKiller(plugin);
+            bossKiller.killStormBoss();
+            for (Entity entity : world.getEntities()) {
+                if (entity.hasMetadata(ELECTRIC_STORM_MOB_METADATA_KEY)) {
+                    entity.remove();
+                }
             }
         }
-
     }
 
     private void addMetadataToMob(Entity entity, JavaPlugin plugin) {

@@ -32,6 +32,7 @@ public class SolarFlareEvent extends BukkitRunnable {
     private final String title;
     private final String subtitle;
     private final boolean chestDrop;
+    private final boolean removeMobs;
 
     public SolarFlareEvent(JavaPlugin plugin, World world, FileConfiguration modesConfig) {
         this.plugin = plugin;
@@ -47,6 +48,7 @@ public class SolarFlareEvent extends BukkitRunnable {
         this.bossSpawnProbability = modesConfig.getDouble("solar_flare." + difficultMode + ".boss_spawn_probability", 0.5);
         this.bossActive = modesConfig.getBoolean("solar_flare." + difficultMode + ".enabled_boss", true);
         this.chestDrop = plugin.getConfig().getBoolean("chest_drop", true);
+        this.removeMobs = plugin.getConfig().getBoolean("remove_mobs_after_events", true);
 
         this.title = ChatColor.translateAlternateColorCodes('&',  ((ClimaticEvents) plugin).getMessagesConfig().getString("solar_flare_title", "&cSolar Flare!"));
         this.subtitle = ChatColor.translateAlternateColorCodes('&', ((ClimaticEvents) plugin).getMessagesConfig().getString("solar_flare_subtitle", "&eSeek shelter from the sun"));
@@ -155,15 +157,17 @@ public class SolarFlareEvent extends BukkitRunnable {
 
         ((ClimaticEvents) plugin).chestDropManager.killChest();
 
-        BossKiller bossKiller = new BossKiller(plugin);
-        bossKiller.killSolarBoss();
-
         ((ClimaticEvents) plugin).solarProgressBarManager.stopProgressBar();
         Bukkit.broadcastMessage(((ClimaticEvents) plugin).getMessage("solar_flare_ended_message"));
 
         for (Player player : this.world.getPlayers()) {
             player.playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0F, 1.0F);
             player.removeMetadata(SOLAR_FLARE_METADATA_KEY, plugin);
+        }
+
+        if(removeMobs) {
+            BossKiller bossKiller = new BossKiller(plugin);
+            bossKiller.killSolarBoss();
         }
     }
     private void spawnMobsNearPlayer(Player player) {
