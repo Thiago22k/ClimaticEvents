@@ -57,9 +57,9 @@ public class BossDeathListener implements Listener {
                         }
                     }
                 }
-                int xpAmount = solarBossXp;
                 Location location = entity.getLocation();
-                Objects.requireNonNull(location.getWorld()).spawn(location, ExperienceOrb.class, orb -> orb.setExperience(xpAmount));
+                ExperienceOrb orb = Objects.requireNonNull(location.getWorld()).spawn(location, ExperienceOrb.class);
+                orb.setExperience(solarBossXp);
             }
         }
         if (entity.getType() == EntityType.STRAY && entity.hasMetadata("rainBoss")) {
@@ -80,9 +80,10 @@ public class BossDeathListener implements Listener {
                     }
                 }
             }
-            int xpAmount = rainBossXp;
             Location location = entity.getLocation();
-            Objects.requireNonNull(location.getWorld()).spawn(location, ExperienceOrb.class, orb -> orb.setExperience(xpAmount));
+            ExperienceOrb orb = Objects.requireNonNull(location.getWorld()).spawn(location, ExperienceOrb.class);
+            orb.setExperience(rainBossXp);
+
         }
         if (entity.getType() == EntityType.IRON_GOLEM && entity.hasMetadata("stormBoss")) {
             event.getDrops().clear();
@@ -102,9 +103,9 @@ public class BossDeathListener implements Listener {
                     }
                 }
             }
-            int xpAmount = stormBossXp;
             Location location = entity.getLocation();
-            Objects.requireNonNull(location.getWorld()).spawn(location, ExperienceOrb.class, orb -> orb.setExperience(xpAmount));
+            ExperienceOrb orb = Objects.requireNonNull(location.getWorld()).spawn(location, ExperienceOrb.class);
+            orb.setExperience(stormBossXp);
         }
     }
 }
