@@ -4,6 +4,7 @@ solar_flare:
     damage_per_seconds: 7
     duration_seconds: 420
     damage_interval_seconds: 1
+    nausea_probability: 0.8
     ignite_probability: 0.8
     nether_mobs_probability: 0.8
     boss_spawn_probability: 1.0

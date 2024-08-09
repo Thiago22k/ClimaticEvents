@@ -12,6 +12,8 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class SolarFlareEvent extends BukkitRunnable {
@@ -33,6 +35,7 @@ public class SolarFlareEvent extends BukkitRunnable {
     private final String subtitle;
     private final boolean chestDrop;
     private final boolean removeMobs;
+    private final double nauseaProbability;
 
     public SolarFlareEvent(JavaPlugin plugin, World world, FileConfiguration modesConfig) {
         this.plugin = plugin;
@@ -46,6 +49,7 @@ public class SolarFlareEvent extends BukkitRunnable {
         this.igniteProbability = modesConfig.getDouble("solar_flare." + difficultMode + ".ignite_probability", 0.1);
         this.netherProbabilitySpawn = modesConfig.getDouble("solar_flare." + difficultMode + ".nether_mobs_probability", 0.5);
         this.bossSpawnProbability = modesConfig.getDouble("solar_flare." + difficultMode + ".boss_spawn_probability", 0.5);
+        this.nauseaProbability = modesConfig.getDouble("solar_flare." + difficultMode + ".nausea_probability", 0.5);
         this.bossActive = modesConfig.getBoolean("solar_flare." + difficultMode + ".enabled_boss", true);
         this.chestDrop = plugin.getConfig().getBoolean("chest_drop", true);
         this.removeMobs = plugin.getConfig().getBoolean("remove_mobs_after_events", true);
@@ -71,6 +75,9 @@ public class SolarFlareEvent extends BukkitRunnable {
 
                     if (this.random.nextDouble() < this.igniteProbability) {
                         player.setFireTicks(40);
+                    }
+                    if (this.random.nextDouble() < this.nauseaProbability){
+                        player.addPotionEffect(new PotionEffect(Objects.requireNonNull(PotionEffectType.getById(9)), 120, 1, false, false));
                     }
                 }
             }
