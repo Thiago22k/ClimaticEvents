@@ -30,9 +30,12 @@ public class GlobalAmbientParticleTask extends BukkitRunnable {
                 double offsetX = (Math.random() - 0.5) * radius * 2;
                 double offsetY = (Math.random() - 0.5) * radius * 2;
                 double offsetZ = (Math.random() - 0.5) * radius * 2;
-                Objects.requireNonNull(loc.getWorld()).spawnParticle(particle, loc.getX() + offsetX, loc.getY() + offsetY, loc.getZ() + offsetZ, 0, 0.5, 0.5, 0.5, speed);
+                Location particleLocation = loc.clone().add(offsetX, offsetY, offsetZ);
+
+                if (particleLocation.getY() > 0) {
+                    Objects.requireNonNull(loc.getWorld()).spawnParticle(particle, particleLocation, 0, 0.5, 0.5, 0.5, speed);
+                }
             }
         }
     }
 }
-

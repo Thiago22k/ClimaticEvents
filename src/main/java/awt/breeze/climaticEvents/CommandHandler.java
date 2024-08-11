@@ -431,6 +431,9 @@ public class CommandHandler implements TabExecutor {
                 if (((ClimaticEvents)plugin).acidRainEvent != null && ((ClimaticEvents)plugin).acidRainEvent.running) {
                     ((ClimaticEvents)plugin).acidRainEvent.cancel();
                 }
+                if (((ClimaticEvents)plugin).electricStormEvent != null && ((ClimaticEvents)plugin).electricStormEvent.running) {
+                    ((ClimaticEvents)plugin).electricStormEvent.cancel();
+                }
                 ((ClimaticEvents)plugin).enabled = false;
                 plugin.getConfig().set("enabled", false);
                 plugin.saveConfig();

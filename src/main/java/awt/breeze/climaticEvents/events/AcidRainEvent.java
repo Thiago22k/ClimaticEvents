@@ -128,7 +128,7 @@ public class AcidRainEvent extends BukkitRunnable {
     public void startEvent() {
         if(!this.running) {
             this.running = true;
-            particleTask = new GlobalAmbientParticleTask(Particle.CRIMSON_SPORE, 350, 20, 0.05);
+            particleTask = new GlobalAmbientParticleTask(Particle.SPORE_BLOSSOM_AIR, 350, 20, 0.05);
             particleTask.runTaskTimer(plugin, 0, 5);
             ((ClimaticEvents) plugin).chestDropManager.lootChestPlaced = false;
             runTaskTimer(this.plugin, 0L, 20L);
