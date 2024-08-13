@@ -1,4 +1,4 @@
-package awt.breeze.climaticEvents;
+package awt.breeze.climaticEvents.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

@@ -1,4 +1,4 @@
-package awt.breeze.climaticEvents;
+package awt.breeze.climaticEvents.extras;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;

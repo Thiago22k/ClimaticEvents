@@ -1,4 +1,4 @@
-package awt.breeze.climaticEvents;
+package awt.breeze.climaticEvents.utils;
 
 public enum PanelMain {
     PANEL_MAIN,

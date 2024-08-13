@@ -1,5 +1,6 @@
-package awt.breeze.climaticEvents;
+package awt.breeze.climaticEvents.extras;
 
+import awt.breeze.climaticEvents.ClimaticEvents;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

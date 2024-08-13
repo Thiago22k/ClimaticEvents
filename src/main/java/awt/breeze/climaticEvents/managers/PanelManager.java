@@ -1,8 +1,8 @@
 package awt.breeze.climaticEvents.managers;
 
 import awt.breeze.climaticEvents.ClimaticEvents;
-import awt.breeze.climaticEvents.PanelMain;
-import awt.breeze.climaticEvents.PanelPlayer;
+import awt.breeze.climaticEvents.utils.PanelMain;
+import awt.breeze.climaticEvents.utils.PanelPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,9 +20,9 @@ import java.util.Set;
 
 public class PanelManager {
 
-    private JavaPlugin plugin;
-    private ArrayList<PanelPlayer> players;
-    private String prefix;
+    private final JavaPlugin plugin;
+    private final ArrayList<PanelPlayer> players;
+    private final String prefix;
     private final Set<Player> playersAwaitingInput = new HashSet<>();
 
     public String ColoredMessage(String message) {
