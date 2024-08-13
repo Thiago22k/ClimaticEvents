@@ -71,7 +71,7 @@ public class PanelManager {
         assert meta != null;
         meta.setDisplayName(" ");
         item.setItemMeta(meta);
-        int[] whitePane = {9, 18, 27, 17, 26, 35};
+        int[] whitePane = {11, 13, 15, 19, 21, 22, 23, 25, 29, 31, 33};
         for (int position : whitePane) {
             panel.setItem(position, item);
         }
@@ -81,7 +81,7 @@ public class PanelManager {
         assert meta != null;
         meta.setDisplayName(" ");
         item.setItemMeta(meta);
-        int[] bluePane = {1, 2, 3, 4, 5, 6, 7, 10, 19, 28, 37, 16, 25, 34, 43, 38, 39, 41, 42};
+        int[] bluePane = {1, 2, 3, 4, 5, 6, 7, 9, 18, 27, 17, 26, 35};
         for (int position : bluePane) {
             panel.setItem(position, item);
         }
@@ -181,7 +181,7 @@ public class PanelManager {
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         meta.setLore(lore);
         item.setItemMeta(meta);
-        panel.setItem(11, item);
+        panel.setItem(10, item);
 
         item = new ItemStack(Material.SLIME_BLOCK);
         meta = item.getItemMeta();
@@ -195,7 +195,7 @@ public class PanelManager {
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         meta.setLore(lore);
         item.setItemMeta(meta);
-        panel.setItem(13, item);
+        panel.setItem(12, item);
 
         item = new ItemStack(Material.CRYING_OBSIDIAN);
         meta = item.getItemMeta();
@@ -209,7 +209,21 @@ public class PanelManager {
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         meta.setLore(lore);
         item.setItemMeta(meta);
-        panel.setItem(15, item);
+        panel.setItem(14, item);
+
+        item = new ItemStack(Material.BLUE_ICE);
+        meta = item.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName(ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_frozen_blast_name", "&bFrozen Blast")));
+        lore = new ArrayList<>();
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
+        lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_frozen_blast_left", "&9Click left to force the start of the frozen blast.")));
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
+        lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_frozen_blast_right", "&9Click right to cancel the frozen blast.")));
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        panel.setItem(16, item);
 
         String timeRemaining = ((ClimaticEvents) plugin).getTimeRemaining();
 
@@ -227,7 +241,7 @@ public class PanelManager {
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         meta.setLore(lore);
         item.setItemMeta(meta);
-        panel.setItem(21, item);
+        panel.setItem(20, item);
 
         String mode = plugin.getConfig().getString("mode", "easy");
 
@@ -252,7 +266,7 @@ public class PanelManager {
             lore.add(ChatColor.translateAlternateColorCodes('&', " "));
             meta.setLore(lore);
             item.setItemMeta(meta);
-            panel.setItem(23, item);
+            panel.setItem(24, item);
         }
 
         item = new ItemStack(Material.BLAZE_SPAWN_EGG);
@@ -267,9 +281,9 @@ public class PanelManager {
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         meta.setLore(lore);
         item.setItemMeta(meta);
-        panel.setItem(29, item);
+        panel.setItem(28, item);
 
-        item = new ItemStack(Material.AXOLOTL_SPAWN_EGG);
+        item = new ItemStack(Material.SLIME_SPAWN_EGG);
         meta = item.getItemMeta();
         assert meta != null;
         meta.setDisplayName(ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_rain_boss_name", "&6Rain Boss")));
@@ -281,9 +295,9 @@ public class PanelManager {
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         meta.setLore(lore);
         item.setItemMeta(meta);
-        panel.setItem(31, item);
+        panel.setItem(30, item);
 
-        item = new ItemStack(Material.ENDERMAN_SPAWN_EGG);
+        item = new ItemStack(Material.ENDER_DRAGON_SPAWN_EGG);
         meta = item.getItemMeta();
         assert meta != null;
         meta.setDisplayName(ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_storm_boss_name", "&6Storm Boss")));
@@ -295,7 +309,21 @@ public class PanelManager {
         lore.add(ChatColor.translateAlternateColorCodes('&', " "));
         meta.setLore(lore);
         item.setItemMeta(meta);
-        panel.setItem(33, item);
+        panel.setItem(32, item);
+
+        item = new ItemStack(Material.STRAY_SPAWN_EGG);
+        meta = item.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName(ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_frozen_boss_name", "&9Frozen Boss")));
+        lore = new ArrayList<>();
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
+        lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_frozen_boss_left", "&9Click left to spawn the frozen boss.")));
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
+        lore.add(prefix + ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_frozen_boss_right", "&9Click right to despawn the frozen boss.")));
+        lore.add(ChatColor.translateAlternateColorCodes('&', " "));
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        panel.setItem(34, item);
 
         player.openInventory(panel);
         players.add(panelPlayer);
@@ -415,28 +443,35 @@ public class PanelManager {
                 player.closeInventory();
                 player.performCommand("climaticevents cancelevent");
             }
-            if (slot == 11 && clickType.isLeftClick()) {
+            if (slot == 10 && clickType.isLeftClick()) {
                 player.closeInventory();
                 player.performCommand("climaticevents forcesolarflare");
-            } else if (slot == 11 && clickType.isRightClick()) {
+            } else if (slot == 10 && clickType.isRightClick()) {
                 player.closeInventory();
                 player.performCommand("climaticevents cancelevent");
             }
-            if (slot == 13 && clickType.isLeftClick()) {
+            if (slot == 12 && clickType.isLeftClick()) {
                 player.closeInventory();
                 player.performCommand("climaticevents forceacidrain");
-            } else if (slot == 13 && clickType.isRightClick()) {
+            } else if (slot == 12 && clickType.isRightClick()) {
                 player.closeInventory();
                 player.performCommand("climaticevents cancelevent");
             }
-            if (slot == 15 && clickType.isLeftClick()) {
+            if (slot == 14 && clickType.isLeftClick()) {
                 player.closeInventory();
                 player.performCommand("climaticevents forceelectricstorm");
-            } else if (slot == 15 && clickType.isRightClick()) {
+            } else if (slot == 14 && clickType.isRightClick()) {
                 player.closeInventory();
                 player.performCommand("climaticevents cancelevent");
             }
-            if (slot == 23) {
+            if (slot == 16 && clickType.isLeftClick()) {
+                player.closeInventory();
+                player.performCommand("climaticevents forcefrozenblast");
+            } else if (slot == 16 && clickType.isRightClick()) {
+                player.closeInventory();
+                player.performCommand("climaticevents cancelevent");
+            }
+            if (slot == 24) {
                 openModesPanel(panelPlayer);
             }
             if (slot == 44) {
@@ -453,33 +488,40 @@ public class PanelManager {
                 player.closeInventory();
                 player.performCommand("climaticevents killchest");
             }
-            if (slot == 21 && clickType.isLeftClick()) {
+            if (slot == 20 && clickType.isLeftClick()) {
                 player.closeInventory();
                 player.performCommand("climaticevents newtime");
-            } else if (slot == 21 && clickType.isRightClick()) {
+            } else if (slot == 20 && clickType.isRightClick()) {
                 player.closeInventory();
                 player.performCommand("climaticevents resetdays");
             }
-            if (slot == 29 && clickType.isLeftClick()) {
+            if (slot == 28 && clickType.isLeftClick()) {
                 player.closeInventory();
                 player.performCommand("climaticevents spawnsolarboss");
-            } else if (slot == 29 && clickType.isRightClick()) {
+            } else if (slot == 28 && clickType.isRightClick()) {
                 player.closeInventory();
                 player.performCommand("climaticevents killsolarboss");
             }
-            if (slot == 31 && clickType.isLeftClick()) {
+            if (slot == 30 && clickType.isLeftClick()) {
                 player.closeInventory();
                 player.performCommand("climaticevents spawnrainboss");
-            } else if (slot == 31 && clickType.isRightClick()) {
+            } else if (slot == 30 && clickType.isRightClick()) {
                 player.closeInventory();
                 player.performCommand("climaticevents killrainboss");
             }
-            if (slot == 33 && clickType.isLeftClick()) {
+            if (slot == 32 && clickType.isLeftClick()) {
                 player.closeInventory();
                 player.performCommand("climaticevents spawnstormboss");
-            } else if (slot == 33 && clickType.isRightClick()) {
+            } else if (slot == 32 && clickType.isRightClick()) {
                 player.closeInventory();
                 player.performCommand("climaticevents killstormboss");
+            }
+            if (slot == 34 && clickType.isLeftClick()) {
+                player.closeInventory();
+                player.performCommand("climaticevents spawnfrozenboss");
+            } else if (slot == 34 && clickType.isRightClick()) {
+                player.closeInventory();
+                player.performCommand("climaticevents killfrozenboss");
             }
         }
         if (section.equals(PanelMain.PANEL_MODES)) {

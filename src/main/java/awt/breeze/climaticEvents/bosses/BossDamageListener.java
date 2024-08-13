@@ -76,8 +76,8 @@ public class BossDamageListener implements Listener {
                 player.setVelocity(new Vector(0, 2,0));
                 player.damage(specialSAttackDamage);
             }
-            player.addPotionEffect(new PotionEffect(PotionEffectType.getById(2), 100, 1));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.getById(18), 100, 1));
+            player.addPotionEffect(new PotionEffect(Objects.requireNonNull(PotionEffectType.getById(2)), 100, 1));
+            player.addPotionEffect(new PotionEffect(Objects.requireNonNull(PotionEffectType.getById(18)), 100, 1));
             player.setFireTicks(100);
         }
         if (entity instanceof Zombie && entity.hasMetadata("solarBoss") && damager instanceof Player) {
@@ -85,7 +85,7 @@ public class BossDamageListener implements Listener {
                 event.setCancelled(true);
                 Player player = (Player) event.getDamager();
                 player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 10, 10);
-                player.addPotionEffect(new PotionEffect(PotionEffectType.getById(9), 100, 150));
+                player.addPotionEffect(new PotionEffect(Objects.requireNonNull(PotionEffectType.getById(9)), 100, 150));
                 player.setFireTicks(60);
                 player.setVelocity(new Vector(0, 1, 0));
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', blockedAttack));
@@ -99,8 +99,8 @@ public class BossDamageListener implements Listener {
                 disorganizeHotbar(player);
                 player.damage(specialRAttackDamage);
             }
-            player.addPotionEffect(new PotionEffect(PotionEffectType.getById(17), 100, 128));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.getById(18), 100, 128));
+            player.addPotionEffect(new PotionEffect(Objects.requireNonNull(PotionEffectType.getById(17)), 100, 128));
+            player.addPotionEffect(new PotionEffect(Objects.requireNonNull(PotionEffectType.getById(18)), 100, 128));
             player.setFireTicks(100);
         }
         if (entity instanceof Stray && entity.hasMetadata("rainBoss") && damager instanceof Player) {
@@ -138,6 +138,25 @@ public class BossDamageListener implements Listener {
                 player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 10, 10);
                 disorganizeHotbar(player);
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', blockedAttack));
+            }
+        }
+        if (entity instanceof Drowned && entity.hasMetadata("frozenBoss") && damager instanceof Player player) {
+            if(this.random.nextDouble() < blockedEAttackProbability){
+                event.setCancelled(true);
+                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 10, 10);
+                player.addPotionEffect(new PotionEffect(Objects.requireNonNull(PotionEffectType.getById(15)), 40, 1, false, false));
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', blockedAttack));
+            }
+        }
+    }
+    @EventHandler
+    public void onSnowballHit(EntityDamageByEntityEvent event) {
+        FileConfiguration bossConfig = ((ClimaticEvents) plugin).bossConfig;
+        int bossSnowballDamage = bossConfig.getInt("frozen_blast.boss.snowball_damage", 5);
+        if (event.getDamager() instanceof Snowball snowball) {
+
+            if (snowball.getScoreboardTags().contains("snowballBoss") && event.getEntity() instanceof Player player) {
+                player.damage(bossSnowballDamage);
             }
         }
     }

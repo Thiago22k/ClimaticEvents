@@ -1,7 +1,7 @@
 package awt.breeze.climaticEvents.listeners;
 
 import awt.breeze.climaticEvents.ClimaticEvents;
-import awt.breeze.climaticEvents.PanelPlayer;
+import awt.breeze.climaticEvents.utils.PanelPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

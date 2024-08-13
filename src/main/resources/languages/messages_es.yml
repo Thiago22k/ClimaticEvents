@@ -1,31 +1,36 @@
 help_page_1: |
   &e/climaticevents reload &r- Recarga la configuración.
-  &e/climaticevents resetdays &r- Restablece los días de inicio del evento.
+  &e/climaticevents resetdays &r- Reinicia los días del evento.
   &e/climaticevents startevent &r- Inicia un evento aleatorio.
   &e/climaticevents cancelevent &r- Cancela el evento actual.
   &e/climaticevents nextevent &r- Muestra el tiempo restante para el próximo evento.
-  &e/climaticevents on &r- Activa el plugin.
-  &e/climaticevents off &r- Desactiva el plugin.
+  &e/climaticevents spawnsolarboss &r- Genera al jefe solar.
 help_page_2: |
-  &e/climaticevents spawnsolarboss &r- Genera el jefe solar.
-  &e/climaticevents spawnrainboss &r- Genera el jefe de lluvia.
-  &e/climaticevents spawnstormboss &r- Genera el jefe de tormenta.
+  &e/climaticevents spawnrainboss &r- Genera al jefe de lluvia.
+  &e/climaticevents spawnstormboss &r- Genera al jefe de tormenta.
+  &e/climaticevents spawnfrozenboss &r- Genera al jefe congelado.
   &e/climaticevents killsolarboss &r- Mata al jefe solar.
   &e/climaticevents killrainboss &r- Mata al jefe de lluvia.
   &e/climaticevents killstormboss &r- Mata al jefe de tormenta.
-  &e/climaticevents mode &r- Establece el modo de dificultad.
 help_page_3: |
-  &e/climaticevents forcesolarflare &r- Forzar el inicio de la llamarada solar.
-  &e/climaticevents forceacidrain &r- Forzar el inicio de la lluvia ácida.
-  &e/climaticevents forceelectricstorm &r- Forzar el inicio de la tormenta eléctrica.
-   &e/climaticevents chest &r- Genera el cofre del evento.
-  &e/climaticevents killchest &r- Mata el cofre del evento.
+  &e/climaticevents killfrozenboss &r- Mata al jefe congelado.
+  &e/climaticevents forcesolarflare &r- Fuerza un evento de llamarada solar.
+  &e/climaticevents forceacidrain &r- Fuerza un evento de lluvia ácida.
+  &e/climaticevents forceelectricstorm &r- Fuerza un evento de tormenta eléctrica.
+  &e/climaticevents forcefrozenblast &r- Fuerza un evento de explosión congelada.
+help_page_4: |
+  &e/climaticevents mode &r- Establece el modo de dificultad.
+  &e/climaticevents chest &r- Genera un cofre de evento.
+  &e/climaticevents killchest &r- Mata el cofre de evento.
   &e/climaticevents panel &r- Abre el panel de control.
+  &e/climaticevents on &r- Activa el plugin.
+  &e/climaticevents off &r- Desactiva el plugin.
 invalid_page: "Número de pagína inválido. Usa: &e/climaticevents help <page>"
 unknown_command: "Comando desconocido. Usa: /climaticevents <command>"
 solar_boss_bar_title: "&eEvento Llamarada Solar"
 rain_boss_bar_title: "&bEvento Lluvia ácida"
 storm_boss_bar_title: "&5Evento Tormenta eléctrica"
+frozen_boss_bar_title: "&bEvento Ráfaga helada"
 event_warning_content: |
   &e¡Un evento climático está a punto de golpear 
   en %delay_time% segundos!
@@ -45,18 +50,23 @@ acid_rain_title: "&c¡Lluvia ácida!"
 acid_rain_subtitle: "&eProtégete de la lluvia"
 electric_storm_title: "&b¡Tormenta eléctrica!"
 electric_storm_subtitle: "&eProtégete de los rayos"
+frozen_blast_title: "&c¡Ráfaga helada!"
+frozen_blast_subtitle: "&eProtégete del frío"
 solar_flare_ended_message: "&eLa llamarada solar ha finalizado."
 acid_rain_ended_message: "&eLa lluvia ácida ha finalizado."
 electric_storm_ended_message: "&eLa tormenta eléctrica ha finalizado."
+frozen_blast_ended_message: "&eLa ráfaga helada ha finalizado."
 solar_flare_death_message: "&f%player% fue quemado hasta morir durante una &ellamarada solar&f!"
 acid_rain_death_message: "&f%player% se ha disuelto en la &9lluvia ácida&f!"
 electric_storm_death_message: "&f%player% ha muerto durante una &5tormenta eléctrica&f!"
+frozen_blast_death_message: "&f%player% ha muerto congelado durante una &9ráfaga helada&f!"
 search_chest_location: "&eBuscando una ubicación disponible, por favor espera..."
 chest_loot_message: "&fUn cofre con &5loot especial &fha aparecido en las coordenadas: &e"
 chest_removed_message: "&eCofres eliminados."
 solar_boss_spawned: "¡El &eJefe solar &rha aparecido cerca de &e%player%!"
 rain_boss_spawned: "¡El &9Jefe de la lluvia &rha aparecido cerca de &e%player%!"
 storm_boss_spawned: "¡El &5Jefe de tormenta &rha aparecido cerca de &e%player%!"
+frozen_boss_spawned: "¡El &9Jefe de la ráfaga helada &rha aparecido cerca de &e%player%!"
 blocked_attack: "&c¡El Boss ha bloqueado el ataque!"
 respawn_on_event: "¡Tienes &e10 &rsegundos de inmunidad!"
 no_chests_found: "&cNo hay cofres para eliminar."
@@ -102,6 +112,9 @@ panel_acid_rain_right: "&9Haz [&6click derecho&9] para cancelar la lluvia ácida
 panel_electric_storm_name: "&5Tormenta eléctrica"
 panel_electric_storm_left: "&9Haz [&6click izquierdo&9] para forzar el inicio de una tormenta eléctrica"
 panel_electric_storm_right: "&9Haz [&6click derecho&9] para cancelar la tormenta eléctrica"
+panel_frozen_blast_name: "&9Ráfaga Helada"
+panel_frozen_blast_left: "&9Haz [&6click izquierdo&9] para forzar el inicio de una ráfaga helada"
+panel_frozen_blast_right: "&9Haz [&6click derecho&9] para cancelar la ráfaga helada"
 panel_interval_days_name: "&6Intervalo de días"
 panel_interval_days_left: "&9Haz [&6click izquierdo&9] para cambiar el intervalo de días"
 panel_interval_days_right: "&9Haz [&6click derecho&9] para restablecer el intervalo de días"
@@ -118,6 +131,9 @@ panel_rain_boss_right: "&9Haz [&6click derecho&9] para matar al jefe de lluvia"
 panel_storm_boss_name: "&5Jefe de tormenta"
 panel_storm_boss_left: "&9Haz [&6click izquierdo&9] para spawnear al jefe de tormenta"
 panel_storm_boss_right: "&9Haz [&6click derecho&9] para matar al jefe de tormenta"
+panel_frozen_boss_name: "&9Jefe helado"
+panel_frozen_boss_left: "&9Haz [&6click izquierdo&9] para spawnear al jefe helado"
+panel_frozen_boss_right: "&9Haz [&6click derecho&9] para matar al jefe helado"
 
 # Mode Selector panel
 panel_mode_selector_name: "&6&lSelector de modo"
@@ -130,10 +146,3 @@ panel_hard_mode_description: "&9Haz click para cambiar a modo difícil"
 panel_hardcore_mode_name: "&4Hardcore"
 panel_hardcore_mode_description: "&9Haz click para cambiar a modo hardcore"
 panel_back_name: "&9Atrás"
-
-
-
-
-
-
-

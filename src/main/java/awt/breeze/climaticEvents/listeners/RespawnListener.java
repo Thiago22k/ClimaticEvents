@@ -25,6 +25,8 @@ public class RespawnListener implements Listener {
             event.getEntity().setMetadata("acidRainAffected", new FixedMetadataValue(plugin, true));
         } else if (plugin.electricStormEvent != null && plugin.electricStormEvent.running) {
             event.getEntity().setMetadata("electricStormAffected", new FixedMetadataValue(plugin, true));
+        } else if (plugin.frozenBlastEvent != null && plugin.frozenBlastEvent.running) {
+            event.getEntity().setMetadata("frozenBlastAffected", new FixedMetadataValue(plugin, true));
         }
     }
 
@@ -47,6 +49,12 @@ public class RespawnListener implements Listener {
             if (player.hasMetadata("electricStormAffected")) {
                 player.sendMessage(plugin.getMessage("respawn_on_event"));
                 scheduleMetadataRemoval(player, "electricStormAffected");
+            }
+        }
+        if (plugin.frozenBlastEvent != null && plugin.frozenBlastEvent.running) {
+            if (player.hasMetadata("frozenBlastAffected")) {
+                player.sendMessage(plugin.getMessage("respawn_on_event"));
+                scheduleMetadataRemoval(player, "frozenBlastAffected");
             }
         }
     }

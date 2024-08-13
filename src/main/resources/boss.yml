@@ -47,5 +47,19 @@ electric_storm:
         min_amount: 1
         max_amount: 2
 
+frozen_blast:
+  boss:
+    name: "&5Frozen Guardian"
+    health: 250.0
+    snowball_damage: 5
+    xp: 1400
+    loot:
+      - material: GOLDEN_APPLE
+        min_amount: 1
+        max_amount: 3
+      - material: DIAMOND_BLOCK
+        min_amount: 1
+        max_amount: 2
+
 
 

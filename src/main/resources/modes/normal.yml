@@ -30,3 +30,15 @@ electric_storm:
     storm_mobs_probability: 0.4
     number_of_mobs: 4
     interval_strike_lightning_seconds: 5
+
+frozen_blast:
+  normal:
+    enabled_boss: true
+    duration_seconds: 240
+    damage_per_seconds: 1
+    nether_mobs_probability: 0.4
+    boss_spawn_probability: 0.5
+    blindness_duration_seconds: 2
+    blindness_effect_probability: 0.4
+    falling_snowballs_probability: 0.3
+    snowball_damage: 2

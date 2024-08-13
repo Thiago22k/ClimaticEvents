@@ -3,11 +3,16 @@ package awt.breeze.climaticEvents;
 import awt.breeze.climaticEvents.bosses.BossDamageListener;
 import awt.breeze.climaticEvents.bosses.BossDeathListener;
 import awt.breeze.climaticEvents.bosses.BossKiller;
+import awt.breeze.climaticEvents.events.FrozenBlastEvent;
 import awt.breeze.climaticEvents.events.AcidRainEvent;
 import awt.breeze.climaticEvents.events.ElectricStormEvent;
 import awt.breeze.climaticEvents.events.SolarFlareEvent;
+import awt.breeze.climaticEvents.extras.ClimaticEventsExpansion;
+import awt.breeze.climaticEvents.extras.Metrics;
 import awt.breeze.climaticEvents.listeners.*;
 import awt.breeze.climaticEvents.managers.*;
+import awt.breeze.climaticEvents.utils.CommandHandler;
+import awt.breeze.climaticEvents.utils.VersionChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.boss.BarColor;
@@ -28,6 +33,7 @@ public class ClimaticEvents extends JavaPlugin {
     public SolarFlareEvent solarFlareEvent;
     public AcidRainEvent acidRainEvent;
     public ElectricStormEvent electricStormEvent;
+    public FrozenBlastEvent frozenBlastEvent;
     public FileConfiguration bossConfig;
     public FileConfiguration messagesConfig;
     public FileConfiguration modesConfig;
@@ -36,6 +42,7 @@ public class ClimaticEvents extends JavaPlugin {
     public SolarProgressBarManager solarProgressBarManager;
     public RainProgressBarManager rainProgressBarManager;
     public StormProgressBarManager stormProgressBarManager;
+    public FrozenProgressBarManager frozenProgressBarManager;
     public ChestDropManager chestDropManager;
     public CommandHandler commandHandler;
     private PanelManager panelManager;
@@ -67,16 +74,20 @@ public class ClimaticEvents extends JavaPlugin {
         BossBar solarEventProgressBar = Bukkit.createBossBar(getMessage("solar_boss_bar_title"), BarColor.YELLOW, BarStyle.SEGMENTED_6);
         solarProgressBarManager = new SolarProgressBarManager(this, solarEventProgressBar);
 
-        BossBar stormEventProgressBar = Bukkit.createBossBar(getMessage("storm_boss_bar_title"), BarColor.WHITE, BarStyle.SEGMENTED_6);
+        BossBar stormEventProgressBar = Bukkit.createBossBar(getMessage("storm_boss_bar_title"), BarColor.PURPLE, BarStyle.SEGMENTED_6);
         stormProgressBarManager = new StormProgressBarManager(this, stormEventProgressBar);
+
+        BossBar frozenEventProgressBar = Bukkit.createBossBar(getMessage("frozen_boss_bar_title"), BarColor.WHITE, BarStyle.SEGMENTED_6);
+        frozenProgressBarManager = new FrozenProgressBarManager(this, frozenEventProgressBar);
 
         panelManager = new PanelManager(this);
 
         this.prefix = ChatColor.translateAlternateColorCodes('&', "&8⌈&l&f\uD83C\uDF29&8⌋&r ");
 
-        this.solarFlareEvent = new SolarFlareEvent(this, getServer().getWorld("world"), getConfig());
-        this.acidRainEvent = new AcidRainEvent(this, getServer().getWorld("world"), getConfig());
-        this.electricStormEvent = new ElectricStormEvent(this, getServer().getWorld("world"), getConfig());
+        this.solarFlareEvent = new SolarFlareEvent(this, getServer().getWorld("world"), getModesConfig());
+        this.acidRainEvent = new AcidRainEvent(this, getServer().getWorld("world"), getModesConfig());
+        this.electricStormEvent = new ElectricStormEvent(this, getServer().getWorld("world"), getModesConfig());
+        this.frozenBlastEvent = new FrozenBlastEvent(this, getServer().getWorld("world"), getModesConfig());
         this.enabled = getConfig().getBoolean("enabled", true);
 
         this.chestDropManager = new ChestDropManager(this, getServer().getWorld("world"));
@@ -88,7 +99,7 @@ public class ClimaticEvents extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BossDeathListener(this), this);
         getServer().getPluginManager().registerEvents(new BossDamageListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
-        getServer().getPluginManager().registerEvents(new ClimaticDeathListener(this), this);
+        getServer().getPluginManager().registerEvents(new ClimaticDeathListener(this, getModesConfig()), this);
         getServer().getPluginManager().registerEvents(new RespawnListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerPanelListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerChatListener(this), this);
@@ -110,14 +121,15 @@ public class ClimaticEvents extends JavaPlugin {
         if (solarFlareEvent != null && solarFlareEvent.running) {
             solarFlareEvent.cancel();
             getLogger().info("Active solar flare event cancelled on plugin disable.");
-        }
-        if (acidRainEvent != null && acidRainEvent.running) {
+        }else if (acidRainEvent != null && acidRainEvent.running) {
             acidRainEvent.cancel();
             getLogger().info("Active acid rain event cancelled on plugin disable.");
-        }
-        if (electricStormEvent != null && electricStormEvent.running) {
+        }else if (electricStormEvent != null && electricStormEvent.running) {
             electricStormEvent.cancel();
             getLogger().info("Active electric storm event cancelled on plugin disable.");
+        } else if (frozenBlastEvent != null && frozenBlastEvent.running) {
+            frozenBlastEvent.cancel();
+            getLogger().info("Active frozen blast event cancelled on plugin disable");
         }
         killAllEventEntities();
         clearPlayerMetadata();
@@ -283,6 +295,13 @@ public class ClimaticEvents extends JavaPlugin {
         return ChatColor.translateAlternateColorCodes('&', prefix + messageContent + suffix);
     }
 
+    public String getPage4Message(String key) {
+        String prefix = this.getConfig().getString("messages.prefix", "");
+        String suffix = this.getConfig().getString("messages.page_suffix.page_4", "");
+        String messageContent = getMessage(key);
+        return ChatColor.translateAlternateColorCodes('&', prefix + messageContent + suffix);
+    }
+
     private void updateProgressBarTitle() {
         if (solarProgressBarManager != null) {
             String newTitle = getMessage("solar_boss_bar_title");
@@ -296,6 +315,10 @@ public class ClimaticEvents extends JavaPlugin {
             String newTitle = getMessage("storm_boss_bar_title");
             stormProgressBarManager.updateTitle(newTitle);
         }
+        if (frozenProgressBarManager != null) {
+            String newTitle = getMessage("frozen_boss_bar_title");
+            frozenProgressBarManager.updateTitle(newTitle);
+        }
 
     }
 
@@ -306,6 +329,27 @@ public class ClimaticEvents extends JavaPlugin {
         nextEventTime = System.currentTimeMillis() + period;
     }
 
+    public void startFrozenBlast() {
+        long currentTime = System.currentTimeMillis();
+        nextEventTime = calculateNextEventTime(currentTime);
+        reloadConfig();
+        this.eventActive = true;
+
+        if (frozenBlastEvent != null && frozenBlastEvent.running) {
+            return;
+        }
+
+        World world = Bukkit.getWorlds().get(0);
+        frozenBlastEvent = new FrozenBlastEvent(this, world, modesConfig);
+        world.setStorm(true);
+        world.setThundering(true);
+
+        frozenBlastEvent.startEvent();
+
+        String difficultyMode = getConfig().getString("mode", "normal");
+        long eventDurationMillis = getModesConfig().getInt("frozen_blast." + difficultyMode + ".duration_seconds", 30) * 1000L;
+        frozenProgressBarManager.startFrozenProgressBar(eventDurationMillis);
+    }
     public void startElectricStorm() {
         long currentTime = System.currentTimeMillis();
         nextEventTime = calculateNextEventTime(currentTime);
@@ -414,7 +458,8 @@ public class ClimaticEvents extends JavaPlugin {
         List<Runnable> events = Arrays.asList(
                 this::startAcidRain,
                 this::startSolarFlare,
-                this::startElectricStorm
+                this::startElectricStorm,
+                this::startFrozenBlast
         );
 
         long currentTime = System.currentTimeMillis();
