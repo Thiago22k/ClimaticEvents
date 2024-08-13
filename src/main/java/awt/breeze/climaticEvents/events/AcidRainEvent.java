@@ -4,6 +4,7 @@ import awt.breeze.climaticEvents.ClimaticEvents;
 import awt.breeze.climaticEvents.bosses.BossKiller;
 import awt.breeze.climaticEvents.bosses.RainBossSpawner;
 import awt.breeze.climaticEvents.managers.GlobalAmbientParticleTask;
+import awt.breeze.climaticEvents.utils.Biomes;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -24,7 +25,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
@@ -37,19 +37,7 @@ public class AcidRainEvent extends BukkitRunnable {
     public boolean running;
     public static final String ACID_RAIN_METADATA_KEY = "onAcidRain";
     public static final String ACID_RAIN_MOB_METADATA_KEY = "acidRainMob";
-    private final Set<Biome> noRainBiomes = EnumSet.of(
-            Biome.DESERT,
-            Biome.SAVANNA,
-            Biome.BADLANDS,
-            Biome.SNOWY_TAIGA,
-            Biome.SNOWY_PLAINS,
-            Biome.SAVANNA_PLATEAU,
-            Biome.WINDSWEPT_SAVANNA,
-            Biome.SNOWY_BEACH,
-            Biome.SNOWY_SLOPES,
-            Biome.FROZEN_PEAKS,
-            Biome.FROZEN_OCEAN
-    );
+    private final Set<Biome> noRainBiomes = Biomes.getNoRainBiomes();
 
     private final int durationSeconds;
     private final int damagePerSeconds;
