@@ -81,7 +81,7 @@ public class PanelManager {
         assert meta != null;
         meta.setDisplayName(" ");
         item.setItemMeta(meta);
-        int[] bluePane = {1, 2, 3, 4, 5, 6, 7, 9, 18, 27, 17, 26, 35};
+        int[] bluePane = {1, 2, 3, 4, 5, 6, 7, 9, 18, 27, 17, 26, 35, 37, 38, 39, 41, 42, 43};
         for (int position : bluePane) {
             panel.setItem(position, item);
         }
@@ -297,7 +297,7 @@ public class PanelManager {
         item.setItemMeta(meta);
         panel.setItem(30, item);
 
-        item = new ItemStack(Material.ENDER_DRAGON_SPAWN_EGG);
+        item = new ItemStack(Material.ENDERMAN_SPAWN_EGG);
         meta = item.getItemMeta();
         assert meta != null;
         meta.setDisplayName(ColoredMessage(((ClimaticEvents) plugin).getMessagesConfig().getString("panel_storm_boss_name", "&6Storm Boss")));

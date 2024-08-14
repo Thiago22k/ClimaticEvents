@@ -60,6 +60,7 @@ public class FrozenBossSpawner implements Listener {
             Drowned drowned = (Drowned) world.spawnEntity(location, EntityType.DROWNED);
             drowned.setCustomName(ChatColor.translateAlternateColorCodes('&', bossName));
             drowned.setCustomNameVisible(true);
+            drowned.setBaby(false);
 
             AttributeInstance maxHealth = drowned.getAttribute(Attribute.GENERIC_MAX_HEALTH);
             if (maxHealth != null) {

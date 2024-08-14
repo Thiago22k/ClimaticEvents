@@ -12,6 +12,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-public class StormBossSpawner {
+public class StormBossSpawner implements Listener {
     private final JavaPlugin plugin;
 
     public StormBossSpawner(JavaPlugin plugin) {

@@ -146,7 +146,7 @@ public class FrozenBlastEvent extends BukkitRunnable {
             ((ClimaticEvents) plugin).chestDropManager.lootChestPlaced = false;
             runTaskTimer(this.plugin, 0L, 20L);
             this.plugin.getServer().getScheduler().runTaskLater(this.plugin, () -> this.running = false, 20L * this.durationSeconds);
-            particleTask = new SnowParticleTask(plugin, Particle.FIREWORK, 5000, 0.03);
+            particleTask = new SnowParticleTask(plugin, Particle.SNOWFLAKE, 5000, 0.03);
             particleTask.runTaskTimer(plugin, 0, 5);
 
             new BukkitRunnable() {

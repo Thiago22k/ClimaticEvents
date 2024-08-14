@@ -88,13 +88,7 @@ public class ElectricStormEvent extends BukkitRunnable {
 
     @Override
     public void run() {
-        if (!this.running) {
-            cancel();
-            ((ClimaticEvents) plugin).stormProgressBarManager.stopProgressBar();
-            return;
-        }
-
-        if (!this.world.hasStorm() && this.world.getEnvironment() != World.Environment.NORMAL) {
+        if (!this.running || !this.world.hasStorm() || this.world.getEnvironment() != World.Environment.NORMAL) {
             cancel();
             ((ClimaticEvents) plugin).stormProgressBarManager.stopProgressBar();
             return;
